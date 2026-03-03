@@ -30,6 +30,22 @@ export interface DeliveryChargesSettings {
   freeDeliveryThreshold: number;
 }
 
+export interface HomepageCategory {
+  categoryId: string;
+  image: string;
+  position: number;
+  title?: string;
+  subtitle?: string;
+  link?: string;
+  linkText?: string;
+  isActive?: boolean;
+  category?: {
+    _id: string;
+    name: string;
+    slug: string;
+  };
+}
+
 export interface Settings {
   _id?: string;
   banner: BannerSettings;
@@ -37,6 +53,7 @@ export interface Settings {
   social?: SocialSettings;
   seo?: SEOSettings;
   deliveryCharges?: DeliveryChargesSettings;
+  homepageCategories?: HomepageCategory[];
 }
 
 export interface SettingsResponse {
