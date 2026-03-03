@@ -64,3 +64,47 @@ npm run dev
 - jQuery functionality has been replaced with React state and hooks
 - Images use Next.js Image component where appropriate
 - Cart functionality is implemented with Zustand store
+
+## Deployment to Vercel
+
+This project is configured for deployment on Vercel. Follow these steps:
+
+### Prerequisites
+
+1. Push your code to a Git repository (GitHub, GitLab, or Bitbucket)
+2. Have a Vercel account (sign up at [vercel.com](https://vercel.com))
+
+### Deployment Steps
+
+1. **Import Project to Vercel:**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "Add New Project"
+   - Import your Git repository
+
+2. **Configure Environment Variables:**
+   - In your Vercel project settings, go to "Environment Variables"
+   - Add the following variable:
+     - `NEXT_PUBLIC_API_URL`: Your production API URL (e.g., `https://your-api-domain.com`)
+   - Make sure to add it for all environments (Production, Preview, Development)
+
+3. **Deploy:**
+   - Vercel will automatically detect Next.js and configure the build
+   - The deployment will start automatically after importing
+   - Your site will be live at `https://your-project.vercel.app`
+
+### Important Notes
+
+- **CORS Configuration:** Ensure your backend API allows requests from your Vercel domain
+- **API URL:** Never use `localhost:5000` in production - always use your production API URL
+- **Environment Variables:** All `NEXT_PUBLIC_*` variables must be set in Vercel dashboard
+- **Build:** The project uses `npm run build` which is automatically detected by Vercel
+
+### Local Development
+
+For local development, create a `.env.local` file (not committed to git):
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+The `.env.example` file shows the required environment variables.

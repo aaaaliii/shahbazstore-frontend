@@ -1,5 +1,16 @@
 // API Configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+// Normalize the API URL by removing trailing slashes to prevent double slashes
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+// Remove trailing slashes and fix any double slashes (but preserve protocol slashes)
+export const API_BASE_URL = rawApiUrl
+  .replace(/\/+$/, '') // Remove trailing slashes
+  .replace(/([^:]\/)\/+/g, '$1'); // Remove double slashes but keep protocol (http:// or https://)
+
+// Debug: Log API URL in development and production (client-side only)
+if (typeof window !== 'undefined') {
+  console.log('[API Config] API_BASE_URL:', API_BASE_URL);
+  console.log('[API Config] NEXT_PUBLIC_API_URL env var:', process.env.NEXT_PUBLIC_API_URL || 'NOT SET');
+}
 
 // Get auth token from localStorage
 export const getAuthToken = (): string | null => {
@@ -25,7 +36,9 @@ export const apiFetch = async (
   options: RequestInit = {}
 ): Promise<Response> => {
   const token = getAuthToken();
-  const url = `${API_BASE_URL}${endpoint}`;
+  // Normalize endpoint to ensure it starts with / to prevent double slashes
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE_URL}${normalizedEndpoint}`;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

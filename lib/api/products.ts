@@ -1,4 +1,4 @@
-import { apiFetch, parseResponse } from './config';
+import { apiFetch, parseResponse, API_BASE_URL } from './config';
 import { Product } from '@/types';
 
 // Helper function to format image URLs with backend base URL
@@ -11,8 +11,10 @@ const formatImageUrl = (imagePath: string | undefined): string => {
   }
   
   // Get base URL for images (backend serves at root, not /api)
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-  const BACKEND_BASE_URL = API_BASE_URL.replace('/api', '');
+  // Remove /api suffix if present to get the base backend URL
+  const BACKEND_BASE_URL = API_BASE_URL.endsWith('/api') 
+    ? API_BASE_URL.replace('/api', '') 
+    : API_BASE_URL.replace(/\/api\/?$/, '');
   
   // If starts with /, it's a server path - prepend backend URL
   if (imagePath.startsWith('/')) {
