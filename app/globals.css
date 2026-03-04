@@ -1763,6 +1763,20 @@ body.mmenu-active .sticky-navbar.fixed {
   padding: 2rem 1rem;
 }
 
+/* Tab color - default #ed7e63, active purple #700e77 */
+.product-filter-item a,
+.product-filter-items .nav-link,
+ul.nav.product-filter-items .nav-item a.nav-link {
+  color: #ed7e63 !important;
+}
+
+.product-filter-item a.nav-link.active,
+.product-filter-items .nav-link.active,
+ul.nav.product-filter-items .nav-item a.nav-link.active {
+  color: #700e77 !important;
+  border-bottom-color: #700e77 !important;
+}
+
 .tab-banner-wrapper {
   width: 100%;
   margin-bottom: 2rem;
