@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
 import { QuickViewModal } from "@/components/product/QuickViewModal";
+import { ImageGallery } from "@/components/gallery/ImageGallery";
 import {
   ShopByCategory,
   CategoryWithImage,
@@ -89,14 +90,70 @@ export default function CategoryPage() {
 
   // Static product listing for now (no API fetch)
   const STATIC_PRODUCTS: Product[] = [
-    { id: "1", name: "Product 1", slug: "product-1", price: 999, image: "/assets/images/products/product-1.jpg", category: "" },
-    { id: "2", name: "Product 2", slug: "product-2", price: 1299, image: "/assets/images/products/product-1.jpg", category: "" },
-    { id: "3", name: "Product 3", slug: "product-3", price: 799, image: "/assets/images/products/product-1.jpg", category: "" },
-    { id: "4", name: "Product 4", slug: "product-4", price: 1599, image: "/assets/images/products/product-1.jpg", category: "" },
-    { id: "5", name: "Product 5", slug: "product-5", price: 599, image: "/assets/images/products/product-1.jpg", category: "" },
-    { id: "6", name: "Product 6", slug: "product-6", price: 899, image: "/assets/images/products/product-1.jpg", category: "" },
-    { id: "7", name: "Product 7", slug: "product-7", price: 1199, image: "/assets/images/products/product-1.jpg", category: "" },
-    { id: "8", name: "Product 8", slug: "product-8", price: 499, image: "/assets/images/products/product-1.jpg", category: "" },
+    {
+      id: "1",
+      name: "Product 1",
+      slug: "product-1",
+      price: 999,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
+    {
+      id: "2",
+      name: "Product 2",
+      slug: "product-2",
+      price: 1299,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
+    {
+      id: "3",
+      name: "Product 3",
+      slug: "product-3",
+      price: 799,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
+    {
+      id: "4",
+      name: "Product 4",
+      slug: "product-4",
+      price: 1599,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
+    {
+      id: "5",
+      name: "Product 5",
+      slug: "product-5",
+      price: 599,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
+    {
+      id: "6",
+      name: "Product 6",
+      slug: "product-6",
+      price: 899,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
+    {
+      id: "7",
+      name: "Product 7",
+      slug: "product-7",
+      price: 1199,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
+    {
+      id: "8",
+      name: "Product 8",
+      slug: "product-8",
+      price: 499,
+      image: "/assets/images/products/product-1.jpg",
+      category: "",
+    },
   ];
 
   if (loading) {
@@ -184,6 +241,7 @@ export default function CategoryPage() {
             categories={displayCategories}
             categoryIdsByTab={displayCategoryIdsByTab}
           />
+          <ImageGallery heading="Gallery" />
 
           <div
             className="tabs-and-content-section"
