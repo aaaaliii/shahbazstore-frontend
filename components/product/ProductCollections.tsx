@@ -119,53 +119,38 @@ export function ProductCollections({ categoryId }: ProductCollectionsProps) {
     );
   }
 
+  const collections = [
+    { title: "FEATURED PRODUCTS", products: featuredProducts },
+    { title: "BEST SELLING PRODUCTS", products: bestSellingProducts },
+    { title: "LATEST PRODUCTS", products: latestProducts },
+    { title: "TOP RATED PRODUCTS", products: topRatedProducts },
+  ].filter((col) => col.products.length > 0);
+
+  const colClass =
+    collections.length === 1
+      ? "col-12"
+      : collections.length === 2
+        ? "col-md-6"
+        : collections.length === 3
+          ? "col-md-6 col-lg-4"
+          : "col-md-6 col-lg-3";
+
+  if (collections.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="product-collections-section" style={{ marginBottom: '3rem' }}>
+    <section className="product-collections-section" style={{ marginBottom: "3rem" }}>
       <div className="container">
         <div className="row">
-          <div className="col-md-6 col-lg-3">
-            <h2 className="collection-title" style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>FEATURED PRODUCTS</h2>
-            <div className="product-collection">
-              {featuredProducts.length > 0 ? (
-                featuredProducts.map(renderProductItem)
-              ) : (
-                <p className="text-muted" style={{ fontSize: '0.95rem' }}>No featured products available</p>
-              )}
+          {collections.map((col) => (
+            <div key={col.title} className={colClass}>
+              <h2 className="collection-title" style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem" }}>
+                {col.title}
+              </h2>
+              <div className="product-collection">{col.products.map(renderProductItem)}</div>
             </div>
-          </div>
-
-          <div className="col-md-6 col-lg-3">
-            <h2 className="collection-title" style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>BEST SELLING PRODUCTS</h2>
-            <div className="product-collection">
-              {bestSellingProducts.length > 0 ? (
-                bestSellingProducts.map(renderProductItem)
-              ) : (
-                <p className="text-muted" style={{ fontSize: '0.95rem' }}>No best selling products available</p>
-              )}
-            </div>
-          </div>
-
-          <div className="col-md-6 col-lg-3">
-            <h2 className="collection-title" style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>LATEST PRODUCTS</h2>
-            <div className="product-collection">
-              {latestProducts.length > 0 ? (
-                latestProducts.map(renderProductItem)
-              ) : (
-                <p className="text-muted" style={{ fontSize: '0.95rem' }}>No latest products available</p>
-              )}
-            </div>
-          </div>
-
-          <div className="col-md-6 col-lg-3">
-            <h2 className="collection-title" style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>TOP RATED PRODUCTS</h2>
-            <div className="product-collection">
-              {topRatedProducts.length > 0 ? (
-                topRatedProducts.map(renderProductItem)
-              ) : (
-                <p className="text-muted" style={{ fontSize: '0.95rem' }}>No top rated products available</p>
-              )}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
