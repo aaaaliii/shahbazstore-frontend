@@ -12,21 +12,24 @@ interface ProductCarouselProps {
 export function ProductCarousel({ products }: ProductCarouselProps) {
   return (
     <Swiper
-      spaceBetween={20}
+      spaceBetween={24}
       slidesPerView={2}
       breakpoints={{
         576: {
           slidesPerView: 3,
+          spaceBetween: 24,
         },
         768: {
           slidesPerView: 4,
+          spaceBetween: 24,
         },
         992: {
           slidesPerView: 4,
+          spaceBetween: 28,
         },
         1200: {
           slidesPerView: 5,
-          spaceBetween: 2,
+          spaceBetween: 28,
         },
       }}
       className="products-slider"

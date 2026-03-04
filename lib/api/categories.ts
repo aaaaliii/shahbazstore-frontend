@@ -12,6 +12,7 @@ export interface BackendCategory {
   } | string | null;
   description?: string;
   isActive?: boolean;
+  image?: string;
 }
 
 const transformCategory = (category: BackendCategory): Category => {
@@ -24,6 +25,7 @@ const transformCategory = (category: BackendCategory): Category => {
     name: category.name,
     slug: category.slug,
     parentId: parentId,
+    image: category.image,
   };
 };
 

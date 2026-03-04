@@ -3,8 +3,6 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   images: {
-    // Enable Vercel's image optimization
-    // Remove unoptimized: true to use Vercel's built-in image optimization
     remotePatterns: [
       {
         protocol: 'https',
@@ -13,6 +11,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'http',
         hostname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+        pathname: '/**',
       },
     ],
   },

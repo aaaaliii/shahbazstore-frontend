@@ -36,6 +36,7 @@ export interface Category {
   slug: string;
   parentId?: string;
   children?: Category[];
+  image?: string;
 }
 
 export interface CartItem {

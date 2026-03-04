@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.28.6",
+    "@splidejs/react-splide": "^0.7.12",
     "clsx": "^2.1.1",
     "country-state-city": "^3.2.1",
     "next": "16.1.1",

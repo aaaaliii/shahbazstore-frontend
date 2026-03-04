@@ -21,6 +21,15 @@ export function ProductCollections({ categoryId }: ProductCollectionsProps) {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   useEffect(() => {
+    if (!categoryId) {
+      setFeaturedProducts([]);
+      setBestSellingProducts([]);
+      setLatestProducts([]);
+      setTopRatedProducts([]);
+      setLoading(false);
+      return;
+    }
+
     const fetchCollections = async () => {
       try {
         setLoading(true);

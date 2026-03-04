@@ -14,7 +14,7 @@ interface ProductCardProps {
   product: Product;
   showQuickView?: boolean;
   viewMode?: 'grid' | 'list';
-  /** Shop page theme layout: inner-quickview inner-icon with figure/btn-icon-group */
+  /** Shop page theme layout */
   variant?: 'default' | 'shop';
 }
 
@@ -49,99 +49,30 @@ export function ProductCard({
     toast.success(`${product.name} added to cart`, { icon: '🛒' });
   };
 
-  if (variant === 'shop') {
-    return (
-      <div className="product-default inner-quickview inner-icon">
-        <figure>
-          <Link href={`/product/${product.slug}`}>
-            <Image
-              src={product.image}
-              alt={product.name}
-              width={257}
-              height={257}
-            />
-          </Link>
-          <div className="btn-icon-group">
-            <a
-              href="#"
-              className="btn-icon btn-add-cart product-type-simple"
-              onClick={handleAddToCart}
-            >
-              <i className="icon-shopping-cart"></i>
-            </a>
-          </div>
-          <a
-            href="#"
-            className="btn-quickview"
-            title="Quick View"
-            onClick={(e) => {
-              e.preventDefault();
-              setQuickViewProduct(product);
-            }}
-          >
-            Quick View
-          </a>
-        </figure>
-        <div className="product-details">
-          <div className="category-wrap">
-            <div className="category-list">
-              <Link href="/products" className="product-category">
-                {product.category || 'category'}
-              </Link>
-            </div>
-            <a
-              href="#"
-              title={isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-              className={`btn-icon-wish ${isInWishlist(product.id) ? 'added-wishlist' : ''}`}
-              onClick={handleToggleWishlist}
-            >
-              <i className="icon-heart"></i>
-            </a>
-          </div>
-          <h3 className="product-title">
-            <Link href={`/product/${product.slug}`}>{product.name}</Link>
-          </h3>
-          <div className="ratings-container">
-            <div className="product-ratings">
-              <span
-                className="ratings"
-                style={{ width: `${(product.rating || 0) * 20}%`, color: '#ffc107' }}
-              />
-              <span className="tooltiptext tooltip-top"></span>
-            </div>
-          </div>
-          <div className="price-box">
-            {product.oldPrice && product.oldPrice > product.price && (
-              <del className="old-price">{formatPrice(product.oldPrice)}</del>
-            )}
-            <span className="product-price">{formatPrice(product.price)}</span>
-          </div>
-        </div>
-        <QuickViewModal
-          product={quickViewProduct}
-          isOpen={!!quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
-        />
-      </div>
-    );
-  }
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setQuickViewProduct(product);
+  };
+
+  const categoryName = (product.categoryInfo?.name || product.category || 'category').toUpperCase();
 
   return (
-    <div className={`product-default ${viewMode === 'list' ? 'product-list' : ''}`}>
-      <figure className={viewMode === 'list' ? 'col-md-4' : ''}>
-        <Link href={`/product/${product.slug}`}>
+    <div className={`product-card product-default ${variant === 'shop' ? 'inner-quickview inner-icon' : ''} ${viewMode === 'list' ? 'product-list' : ''}`}>
+      <figure className={`product-card__figure ${viewMode === 'list' ? 'col-md-4' : ''}`}>
+        <Link href={`/product/${product.slug}`} className="product-card__image-link">
           <Image
             src={product.image}
             alt={product.name}
             width={327}
             height={327}
+            className="product-card__image"
           />
         </Link>
       </figure>
-      <div className={`product-details ${viewMode === 'list' ? 'col-md-8' : ''}`}>
+      <div className={`product-details product-card__details ${viewMode === 'list' ? 'col-md-8' : ''}`}>
         <div className="category-list">
-          <Link href="/products" className="product-category">
-            {product.category}
+          <Link href={product.categoryInfo?.id ? `/products?category=${product.categoryInfo.id}` : '/products'} className="product-category">
+            {categoryName}
           </Link>
         </div>
         <h3 className="product-title">
@@ -157,12 +88,12 @@ export function ProductCard({
           </div>
         </div>
         <div className="price-box">
-          {product.oldPrice && (
+          {product.oldPrice && product.oldPrice > product.price && (
             <del className="old-price">{formatPrice(product.oldPrice)}</del>
           )}
           <span className="product-price">{formatPrice(product.price)}</span>
         </div>
-        <div className="product-action">
+        <div className="product-action product-card__actions">
           <a
             href="#"
             title={isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
@@ -184,10 +115,7 @@ export function ProductCard({
               href="#"
               className="btn-quickview"
               title="Quick View"
-              onClick={(e) => {
-                e.preventDefault();
-                setQuickViewProduct(product);
-              }}
+              onClick={handleQuickView}
             >
               <i className="fas fa-external-link-alt"></i>
             </a>
@@ -202,4 +130,3 @@ export function ProductCard({
     </div>
   );
 }
-

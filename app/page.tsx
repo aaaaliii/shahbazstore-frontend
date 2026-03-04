@@ -8,6 +8,7 @@ import { PromotionCarousel } from "@/components/banners/PromotionCarousel";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
 import { QuickViewModal } from "@/components/product/QuickViewModal";
 import { ProductCollections } from "@/components/product/ProductCollections";
+import { ShopByCategory, CategoryWithImage } from "@/components/category/ShopByCategory";
 import { Product } from "@/types";
 import { productsApi } from "@/lib/api/products";
 import { categoriesApi } from "@/lib/api/categories";
@@ -88,64 +89,71 @@ export default function HomePage() {
     fetchSettings();
   }, []);
 
+  // Fetch categories on mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategories = async () => {
       try {
-        setLoading(true);
         setSiteLoading(true);
-
-        // Fetch categories dynamically
         const fetchedCategories = await categoriesApi.getCategories();
-        // Filter only top-level categories (no parent)
         const topLevelCategories = fetchedCategories.filter(
           (cat) => !cat.parentId,
         );
         setCategories(topLevelCategories);
 
-        // Set first category as active tab
         if (topLevelCategories.length > 0) {
           const firstCategorySlug =
             topLevelCategories[0].slug || topLevelCategories[0].id;
           setActiveTab(firstCategorySlug);
+          setCategoryIdsByTab(
+            Object.fromEntries(
+              topLevelCategories.map((cat) => [
+                cat.slug || cat.id,
+                cat.id,
+              ])
+            )
+          );
         }
-
-        // Fetch products for each category
-        const productsByCategory: Record<string, Product[]> = {};
-        const categoryIdsByTab: Record<string, string> = {};
-
-        for (const category of topLevelCategories) {
-          const tabKey = category.slug || category.id;
-
-          try {
-            // Get products from this category
-            const result = await productsApi.getProducts({
-              category: category.id,
-              limit: 20,
-            });
-
-            productsByCategory[tabKey] = result.products || [];
-            categoryIdsByTab[tabKey] = category.id;
-          } catch (error) {
-            console.error(
-              `Failed to fetch products for ${category.name}:`,
-              error,
-            );
-            productsByCategory[tabKey] = [];
-          }
-        }
-
-        setFeaturedProducts(productsByCategory);
-        setCategoryIdsByTab(categoryIdsByTab);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error("Failed to fetch categories:", error);
       } finally {
-        setLoading(false);
         setSiteLoading(false);
       }
     };
 
-    fetchData();
+    fetchCategories();
   }, []);
+
+  // Fetch products only for the active category (lazy load on switch)
+  useEffect(() => {
+    if (!activeTab || !categoryIdsByTab[activeTab]) return;
+
+    const categoryId = categoryIdsByTab[activeTab];
+    if (featuredProducts[activeTab]?.length) return; // Already cached
+
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const result = await productsApi.getProducts({
+          category: categoryId,
+          limit: 20,
+        });
+        setFeaturedProducts((prev) => ({
+          ...prev,
+          [activeTab]: result.products || [],
+        }));
+      } catch (error) {
+        console.error("Failed to fetch products for category:", error);
+        setFeaturedProducts((prev) => ({
+          ...prev,
+          [activeTab]: [],
+        }));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [activeTab, categoryIdsByTab, featuredProducts]);
 
   // Helper function to get category link
   const getCategoryLink = (category: any) => {
@@ -370,50 +378,26 @@ export default function HomePage() {
         <hr className="mt-0" />
 
         <section className="featured-section product-slider-tab appear-animate">
-          <div
-            className="heading d-flex align-items-center justify-content-center mt-5 mb-5"
-            style={{ overflowX: "auto", width: "100%" }}
-          >
-            <ul
-              className="nav product-filter-items mb-0"
-              style={{
-                display: "flex",
-                flexWrap: "nowrap",
-                gap: "1.5rem",
-                padding: "0 1rem",
-                maxWidth: "100%",
-              }}
-            >
-              {categories.map((category) => {
-                const tabKey = category.slug || category.id;
-                return (
-                  <li
-                    key={category.id}
-                    className="nav-item product-filter-item"
-                    style={{ flexShrink: 0 }}
-                  >
-                    <a
-                      href="#"
-                      className={`nav-link ${activeTab === tabKey ? "active" : ""}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab(tabKey);
-                      }}
-                      style={{
-                        cursor: "pointer",
-                        userSelect: "none",
-                        fontSize: "2rem",
-                        fontWeight: "600",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {category.name.toUpperCase()}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          <ShopByCategory
+            categories={categories.map((category): CategoryWithImage => {
+              const tabKey = category.slug || category.id;
+              const products = featuredProducts[tabKey] || [];
+              const homepageCat = homepageCategories.find(
+                (hc) => hc.categoryId === category.id
+              );
+              return {
+                ...category,
+                image:
+                  category.image ||
+                  homepageCat?.image ||
+                  products[0]?.image ||
+                  "/assets/images/products/product-1.jpg",
+              };
+            })}
+            activeTab={activeTab}
+            onCategorySelect={setActiveTab}
+            categoryIdsByTab={categoryIdsByTab}
+          />
 
           <div className="tab-content">
             {loading ? (
