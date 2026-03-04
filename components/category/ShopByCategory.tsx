@@ -14,6 +14,8 @@ export interface CategoryWithImage extends Category {
 interface ShopByCategoryProps {
   categories: CategoryWithImage[];
   categoryIdsByTab: Record<string, string>;
+  /** When set (e.g. "/category"), links go to /category/[slug]. Otherwise /products?category=id */
+  basePath?: string;
 }
 
 function formatImageUrl(imagePath: string | undefined): string {
@@ -48,6 +50,7 @@ const SPLIDE_OPTIONS = {
 export function ShopByCategory({
   categories,
   categoryIdsByTab,
+  basePath,
 }: ShopByCategoryProps) {
   if (categories.length === 0) return null;
 
@@ -72,9 +75,11 @@ export function ShopByCategory({
               <SplideSlide key={category.id}>
                 <Link
                   href={
-                    categoryId
-                      ? `/products?category=${categoryId}`
-                      : "/products"
+                    basePath && (category.slug || category.id)
+                      ? `${basePath}/${category.slug || category.id}`
+                      : categoryId
+                        ? `/products?category=${categoryId}`
+                        : "/products"
                   }
                   className="shop-by-category__item"
                 >

@@ -242,6 +242,7 @@ export default function HomePage() {
               };
             })}
             categoryIdsByTab={categoryIdsByTab}
+            basePath="/category"
           />
 
           <div
