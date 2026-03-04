@@ -13,8 +13,6 @@ export interface CategoryWithImage extends Category {
 
 interface ShopByCategoryProps {
   categories: CategoryWithImage[];
-  activeTab: string;
-  onCategorySelect: (tabKey: string) => void;
   categoryIdsByTab: Record<string, string>;
 }
 
@@ -49,8 +47,6 @@ const SPLIDE_OPTIONS = {
 
 export function ShopByCategory({
   categories,
-  activeTab,
-  onCategorySelect,
   categoryIdsByTab,
 }: ShopByCategoryProps) {
   if (categories.length === 0) return null;
@@ -70,7 +66,6 @@ export function ShopByCategory({
           {categories.map((category) => {
             const tabKey = category.slug || category.id;
             const categoryId = categoryIdsByTab[tabKey];
-            const isActive = activeTab === tabKey;
             const imageUrl = formatImageUrl(category.image);
 
             return (
@@ -81,11 +76,7 @@ export function ShopByCategory({
                       ? `/products?category=${categoryId}`
                       : "/products"
                   }
-                  className={`shop-by-category__item ${isActive ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onCategorySelect(tabKey);
-                  }}
+                  className="shop-by-category__item"
                 >
                   <div className="shop-by-category__circle">
                     <Image

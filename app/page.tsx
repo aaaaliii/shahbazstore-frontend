@@ -3,12 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { HomeBanner } from "@/components/banners/HomeBanner";
+import { HeroCarousel } from "@/components/banners/HeroCarousel";
 import { PromotionCarousel } from "@/components/banners/PromotionCarousel";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
 import { QuickViewModal } from "@/components/product/QuickViewModal";
 import { ProductCollections } from "@/components/product/ProductCollections";
-import { ShopByCategory, CategoryWithImage } from "@/components/category/ShopByCategory";
+import {
+  ShopByCategory,
+  CategoryWithImage,
+} from "@/components/category/ShopByCategory";
 import { Product } from "@/types";
 import { productsApi } from "@/lib/api/products";
 import { categoriesApi } from "@/lib/api/categories";
@@ -70,10 +73,13 @@ export default function HomePage() {
       try {
         const siteSettings = await settingsApi.get();
         setSettings(siteSettings);
-        if (siteSettings.homepageCategories && siteSettings.homepageCategories.length > 0) {
+        if (
+          siteSettings.homepageCategories &&
+          siteSettings.homepageCategories.length > 0
+        ) {
           // Sort by position and filter active ones
           const sorted = siteSettings.homepageCategories
-            .filter(cat => cat.isActive !== false)
+            .filter((cat) => cat.isActive !== false)
             .sort((a, b) => a.position - b.position);
           setHomepageCategories(sorted);
         } else {
@@ -106,11 +112,8 @@ export default function HomePage() {
           setActiveTab(firstCategorySlug);
           setCategoryIdsByTab(
             Object.fromEntries(
-              topLevelCategories.map((cat) => [
-                cat.slug || cat.id,
-                cat.id,
-              ])
-            )
+              topLevelCategories.map((cat) => [cat.slug || cat.id, cat.id]),
+            ),
           );
         }
       } catch (error) {
@@ -168,164 +171,8 @@ export default function HomePage() {
   return (
     <main className={`home main ${!settings?.banner?.isActive ? "mt-10" : ""}`}>
       <div className="container">
-        <section>
-          <div className="row grid">
-            {homepageCategories.length > 0 ? (
-              <>
-                <div className="grid-item col-lg-5 height-x1">
-                  <HomeBanner
-                    image={homepageCategories[0]?.image || "/assets/images/demoes/demo29/banners/home-banner1.jpg"}
-                    imageWidth={674}
-                    imageHeight={316}
-                    title={homepageCategories[0]?.title || homepageCategories[0]?.category?.name || "black<br />Armchairs"}
-                    price={homepageCategories[0]?.subtitle || "starting from Rs 399"}
-                    link={getCategoryLink(homepageCategories[0])}
-                    linkText={homepageCategories[0]?.linkText || "shop now"}
-                    position="right"
-                    titleClass="ls-10"
-                  />
-                </div>
-                <div className="grid-item col-lg-7 height-x2">
-                  <div className="home-banner">
-                    <figure className="bg-gray">
-                      <Image
-                        src={homepageCategories[1]?.image || "/assets/images/demoes/demo29/banners/home-banner2.jpg"}
-                        width={951}
-                        height={651}
-                        alt="banner"
-                      />
-                    </figure>
-                    <div className="banner-content content-left">
-                      <h3>
-                        <strong>
-                          {homepageCategories[1]?.title || homepageCategories[1]?.category?.name || "wooden"}
-                          <br />
-                        </strong>
-                        {homepageCategories[1]?.subtitle || "Black Chair"}
-                      </h3>
-                      <div className="banner-info">
-                        {homepageCategories[1]?.linkText && (
-                          <Link href={getCategoryLink(homepageCategories[1])} className="btn skew-box">
-                            {homepageCategories[1].linkText}
-                          </Link>
-                        )}
-                        <Link href={getCategoryLink(homepageCategories[1])} className="btn">
-                          shop now <i className="fas fa-long-arrow-alt-right"></i>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {homepageCategories[2] && (
-                  <div className="grid-item col-6 col-lg-2 height-x1">
-                    <HomeBanner
-                      image={homepageCategories[2]?.image || "/assets/images/demoes/demo29/banners/home-banner3.jpg"}
-                      imageWidth={257}
-                      imageHeight={315}
-                      subtitle={homepageCategories[2]?.subtitle || "check new arrivals"}
-                      title={`<strong>${homepageCategories[2]?.title || homepageCategories[2]?.category?.name || "cool lamps"}</strong>`}
-                      link={getCategoryLink(homepageCategories[2])}
-                      linkText={homepageCategories[2]?.linkText || "shop now"}
-                      position="top"
-                      className="bg-dark"
-                      useH4={true}
-                    />
-                  </div>
-                )}
-                {homepageCategories[3] && (
-                  <div className="grid-item col-6 col-lg-3 height-x1">
-                    <HomeBanner
-                      image={homepageCategories[3]?.image || "/assets/images/demoes/demo29/banners/home-banner4.jpg"}
-                      imageWidth={396}
-                      imageHeight={315}
-                      subtitle={homepageCategories[3]?.subtitle || "exclusive new collection"}
-                      title={`<strong>${homepageCategories[3]?.title || homepageCategories[3]?.category?.name || "luxurious jacuzzi"}</strong>`}
-                      link={getCategoryLink(homepageCategories[3])}
-                      linkText={homepageCategories[3]?.linkText || "shop now"}
-                      position="bottom"
-                      className="bg-primary"
-                      useH4={true}
-                    />
-                  </div>
-                )}
-              </>
-            ) : (
-              // Fallback to default banners if not configured
-              <>
-                <div className="grid-item col-lg-5 height-x1">
-                  <HomeBanner
-                    image="/assets/images/demoes/demo29/banners/home-banner1.jpg"
-                    imageWidth={674}
-                    imageHeight={316}
-                    title="black<br />Armchairs"
-                    price="starting from Rs 399"
-                    link="/products"
-                    linkText="shop now"
-                    position="right"
-                    titleClass="ls-10"
-                  />
-                </div>
-                <div className="grid-item col-lg-7 height-x2">
-                  <div className="home-banner">
-                    <figure className="bg-gray">
-                      <Image
-                        src="/assets/images/demoes/demo29/banners/home-banner2.jpg"
-                        width={951}
-                        height={651}
-                        alt="banner"
-                      />
-                    </figure>
-                    <div className="banner-content content-left">
-                      <h3>
-                        <strong>
-                          wooden
-                          <br />
-                        </strong>
-                        Black Chair
-                      </h3>
-                      <div className="banner-info">
-                        <a href="#" className="btn skew-box">
-                          go coupon
-                        </a>
-                        <h3 className="sale-off skew-box">
-                          <span>Rs 100</span>off
-                        </h3>
-                        <p className="font2">starting from Rs 199</p>
-                        <Link href="/products" className="btn">
-                          shop now <i className="fas fa-long-arrow-alt-right"></i>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="grid-item col-6 col-lg-2 height-x1">
-                  <HomeBanner
-                    image="/assets/images/demoes/demo29/banners/home-banner3.jpg"
-                    imageWidth={257}
-                    imageHeight={315}
-                    subtitle="check new arrivals"
-                    title="<strong>cool lamps</strong>"
-                    position="top"
-                    className="bg-dark"
-                    useH4={true}
-                  />
-                </div>
-                <div className="grid-item col-6 col-lg-3 height-x1">
-                  <HomeBanner
-                    image="/assets/images/demoes/demo29/banners/home-banner4.jpg"
-                    imageWidth={396}
-                    imageHeight={315}
-                    subtitle="exclusive new collection"
-                    title="<strong>luxurious jacuzzi</strong>"
-                    position="bottom"
-                    className="bg-primary"
-                    useH4={true}
-                  />
-                </div>
-              </>
-            )}
-            <div className="col-1 pr-0 pl-0 grid-col-sizer"></div>
-          </div>
+        <section className="hero-section">
+          <HeroCarousel />
         </section>
 
         <PromotionCarousel heading="Special Promotions" />
@@ -383,7 +230,7 @@ export default function HomePage() {
               const tabKey = category.slug || category.id;
               const products = featuredProducts[tabKey] || [];
               const homepageCat = homepageCategories.find(
-                (hc) => hc.categoryId === category.id
+                (hc) => hc.categoryId === category.id,
               );
               return {
                 ...category,
@@ -394,10 +241,65 @@ export default function HomePage() {
                   "/assets/images/products/product-1.jpg",
               };
             })}
-            activeTab={activeTab}
-            onCategorySelect={setActiveTab}
             categoryIdsByTab={categoryIdsByTab}
           />
+
+          <div className="tab-banner-wrapper">
+            <Link href="/products" className="tab-banner">
+              <Image
+                src="/assets/images/banners/ramzan banner.jpg"
+                alt="Ramzan Kareem - Customize Your Ramadan Blessings"
+                fill
+                className="tab-banner__img"
+              />
+            </Link>
+          </div>
+
+          <div className="tabs-and-content-section">
+          <div
+            className="heading d-flex align-items-center justify-content-center mt-5 mb-5"
+            style={{ overflowX: "auto", width: "100%" }}
+          >
+            <ul
+              className="nav product-filter-items mb-0"
+              style={{
+                display: "flex",
+                flexWrap: "nowrap",
+                gap: "1.5rem",
+                padding: "0 1rem",
+                maxWidth: "100%",
+              }}
+            >
+              {categories.map((category) => {
+                const tabKey = category.slug || category.id;
+                return (
+                  <li
+                    key={category.id}
+                    className="nav-item product-filter-item"
+                    style={{ flexShrink: 0 }}
+                  >
+                    <a
+                      href="#"
+                      className={`nav-link ${activeTab === tabKey ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab(tabKey);
+                      }}
+                      style={{
+                        cursor: "pointer",
+                        userSelect: "none",
+                        fontSize: "2rem",
+                        fontWeight: "600",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {category.name.toUpperCase()}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
           <div className="tab-content">
             {loading ? (
@@ -438,6 +340,7 @@ export default function HomePage() {
                 );
               })
             )}
+          </div>
           </div>
         </section>
       </div>
