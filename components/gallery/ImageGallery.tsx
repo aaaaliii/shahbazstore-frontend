@@ -31,7 +31,15 @@ export function ImageGallery({
   items = DEFAULT_ITEMS,
 }: ImageGalleryProps) {
   return (
-    <section className="image-gallery appear-animate mb-5">
+    <section
+      className="image-gallery appear-animate mb-5"
+      style={{
+        marginLeft: "calc(-50vw + 50%)",
+        marginRight: "calc(-50vw + 50%)",
+        width: "100vw",
+        maxWidth: "100vw",
+      }}
+    >
       {heading && (
         <div className="heading text-center mb-4">
           {/* <h2 className="title title-simple">{heading}</h2> */}
