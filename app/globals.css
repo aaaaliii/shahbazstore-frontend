@@ -164,6 +164,7 @@ body {
   height: auto;
   object-fit: cover;
   transition: transform 0.4s ease;
+  min-height: 270px;
 }
 
 .product-card:hover .product-card__image {
@@ -1770,6 +1771,7 @@ body.mmenu-active .sticky-navbar.fixed {
 .tab-banner {
   display: block;
   width: 100%;
+  height: 280px;
   border-radius: 0.5rem;
   overflow: hidden;
   position: relative;
@@ -1778,7 +1780,7 @@ body.mmenu-active .sticky-navbar.fixed {
 .tab-banner__img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   display: block;
 }

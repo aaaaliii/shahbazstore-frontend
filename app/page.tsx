@@ -249,98 +249,101 @@ export default function HomePage() {
               <Image
                 src="/assets/images/banners/ramzan banner.jpg"
                 alt="Ramzan Kareem - Customize Your Ramadan Blessings"
-                fill
+                width={1200}
+                height={320}
                 className="tab-banner__img"
               />
             </Link>
           </div>
 
           <div className="tabs-and-content-section">
-          <div
-            className="heading d-flex align-items-center justify-content-center mt-5 mb-5"
-            style={{ overflowX: "auto", width: "100%" }}
-          >
-            <ul
-              className="nav product-filter-items mb-0"
-              style={{
-                display: "flex",
-                flexWrap: "nowrap",
-                gap: "1.5rem",
-                padding: "0 1rem",
-                maxWidth: "100%",
-              }}
+            <div
+              className="heading d-flex align-items-center justify-content-center mt-5 mb-5"
+              style={{ overflowX: "auto", width: "100%" }}
             >
-              {categories.map((category) => {
-                const tabKey = category.slug || category.id;
-                return (
-                  <li
-                    key={category.id}
-                    className="nav-item product-filter-item"
-                    style={{ flexShrink: 0 }}
-                  >
-                    <a
-                      href="#"
-                      className={`nav-link ${activeTab === tabKey ? "active" : ""}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab(tabKey);
-                      }}
-                      style={{
-                        cursor: "pointer",
-                        userSelect: "none",
-                        fontSize: "2rem",
-                        fontWeight: "600",
-                        whiteSpace: "nowrap",
-                      }}
+              <ul
+                className="nav product-filter-items mb-0"
+                style={{
+                  display: "flex",
+                  flexWrap: "nowrap",
+                  gap: "1.5rem",
+                  padding: "0 1rem",
+                  maxWidth: "100%",
+                }}
+              >
+                {categories.map((category) => {
+                  const tabKey = category.slug || category.id;
+                  return (
+                    <li
+                      key={category.id}
+                      className="nav-item product-filter-item"
+                      style={{ flexShrink: 0 }}
                     >
-                      {category.name.toUpperCase()}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+                      <a
+                        href="#"
+                        className={`nav-link ${activeTab === tabKey ? "active" : ""}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setActiveTab(tabKey);
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          userSelect: "none",
+                          fontSize: "2rem",
+                          fontWeight: "600",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {category.name.toUpperCase()}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
 
-          <div className="tab-content">
-            {loading ? (
-              <div className="text-center py-5">
-                <p>Loading products...</p>
-              </div>
-            ) : (
-              categories.map((category) => {
-                const tabKey = category.slug || category.id;
-                const products = featuredProducts[tabKey] || [];
-                const categoryId = categoryIdsByTab[tabKey];
-                return (
-                  <div
-                    key={category.id}
-                    className={`tab-pane fade ${
-                      activeTab === tabKey ? "show active" : ""
-                    }`}
-                  >
-                    {products.length > 0 ? (
-                      <>
-                        <ProductCarousel products={products} />
-                        {categoryId && (
-                          <Link
-                            href={`/products?category=${categoryId}`}
-                            className="btn with-icon align-center font2"
-                          >
-                            Browse All
-                            <i className="fas fa-long-arrow-alt-right"></i>
-                          </Link>
-                        )}
-                      </>
-                    ) : (
-                      <div className="text-center py-5">
-                        <p>No featured products available for this category.</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
+            <div className="tab-content">
+              {loading ? (
+                <div className="text-center py-5">
+                  <p>Loading products...</p>
+                </div>
+              ) : (
+                categories.map((category) => {
+                  const tabKey = category.slug || category.id;
+                  const products = featuredProducts[tabKey] || [];
+                  const categoryId = categoryIdsByTab[tabKey];
+                  return (
+                    <div
+                      key={category.id}
+                      className={`tab-pane fade ${
+                        activeTab === tabKey ? "show active" : ""
+                      }`}
+                    >
+                      {products.length > 0 ? (
+                        <>
+                          <ProductCarousel products={products} />
+                          {categoryId && (
+                            <Link
+                              href={`/products?category=${categoryId}`}
+                              className="btn with-icon align-center font2"
+                            >
+                              Browse All
+                              <i className="fas fa-long-arrow-alt-right"></i>
+                            </Link>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-center py-5">
+                          <p>
+                            No featured products available for this category.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </section>
       </div>
