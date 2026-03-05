@@ -241,7 +241,6 @@ export default function CategoryPage() {
             categories={displayCategories}
             categoryIdsByTab={displayCategoryIdsByTab}
           />
-          <ImageGallery heading="Gallery" />
 
           <div
             className="tabs-and-content-section"
@@ -339,6 +338,7 @@ export default function CategoryPage() {
               </div>
             </div>
           </div>
+          <ImageGallery heading="Gallery" />
         </section>
       </div>
 
