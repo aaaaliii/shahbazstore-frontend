@@ -75,10 +75,7 @@ export default function HomePage() {
       try {
         const siteSettings = await settingsApi.get();
         setSettings(siteSettings);
-        if (
-          siteSettings.heroBanners &&
-          siteSettings.heroBanners.length > 0
-        ) {
+        if (siteSettings.heroBanners && siteSettings.heroBanners.length > 0) {
           // Sort by order and filter active ones
           const sorted = siteSettings.heroBanners
             .filter((banner) => banner.isActive !== false)
@@ -99,7 +96,10 @@ export default function HomePage() {
         } else {
           setPromotionBanners([]);
         }
-        if (siteSettings.categoryBanner && siteSettings.categoryBanner.isActive) {
+        if (
+          siteSettings.categoryBanner &&
+          siteSettings.categoryBanner.isActive
+        ) {
           setCategoryBanner(siteSettings.categoryBanner);
         } else {
           setCategoryBanner(null);
@@ -193,27 +193,20 @@ export default function HomePage() {
     <main className={`home main ${!settings?.banner?.isActive ? "mt-10" : ""}`}>
       <div className="container">
         <section className="hero-section">
-          <HeroCarousel 
-            slides={heroBanners.length > 0 ? heroBanners.map(banner => ({
-              image: banner.image,
-              title: banner.title,
-              subtitle: banner.subtitle,
-              link: banner.link,
-              linkText: banner.linkText
-            })) : undefined}
+          <HeroCarousel
+            slides={
+              heroBanners.length > 0
+                ? heroBanners.map((banner) => ({
+                    image: banner.image,
+                    title: banner.title,
+                    subtitle: banner.subtitle,
+                    link: banner.link,
+                    linkText: banner.linkText,
+                  }))
+                : undefined
+            }
           />
         </section>
-
-        <PromotionCarousel 
-          heading="Special Promotions"
-          promotions={promotionBanners.length > 0 ? promotionBanners.map(banner => ({
-            image: banner.image,
-            alt: banner.alt || 'Promotion Banner',
-            link: banner.categoryId ? `/products?category=${banner.categoryId}` : '/products',
-            imageWidth: 600,
-            imageHeight: 400
-          })) : undefined}
-        />
 
         <section className="info-box-container mb-0 appear-animate">
           <div className="row">
@@ -291,10 +284,13 @@ export default function HomePage() {
             <div className="container">
               {categoryBanner && categoryBanner.image ? (
                 <div className="tab-banner-wrapper">
-                  <Link href={categoryBanner.link || '/products'} className="tab-banner">
+                  <Link
+                    href={categoryBanner.link || "/products"}
+                    className="tab-banner"
+                  >
                     <Image
                       src={categoryBanner.image}
-                      alt={categoryBanner.alt || 'Category Banner'}
+                      alt={categoryBanner.alt || "Category Banner"}
                       width={1200}
                       height={320}
                       className="tab-banner__img"
@@ -404,7 +400,22 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-        <PromotionCarousel heading="Special Promotions" />
+        <PromotionCarousel
+          heading="Special Promotions"
+          promotions={
+            promotionBanners.length > 0
+              ? promotionBanners.map((banner) => ({
+                  image: banner.image,
+                  alt: banner.alt || "Promotion Banner",
+                  link: banner.categoryId
+                    ? `/products?category=${banner.categoryId}`
+                    : "/products",
+                  imageWidth: 600,
+                  imageHeight: 400,
+                }))
+              : undefined
+          }
+        />
       </div>
 
       <ProductCollections categoryId={categoryIdsByTab[activeTab]} />
