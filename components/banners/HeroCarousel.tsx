@@ -76,6 +76,7 @@ export function HeroCarousel({
             <SwiperSlide key={index}>
               <Link href={link} className="hero-carousel__slide">
                 <div className="hero-carousel__figure">
+                  <span className="hero-carousel__overlay" aria-hidden />
                   <Image
                     src={slide.image}
                     alt={slide.title || `Banner ${index + 1}`}

@@ -50,7 +50,7 @@ export function PromotionCarousel({
 }: PromotionCarouselProps) {
   return (
     <section className="promotion-carousel appear-animate mb-5">
-      <div className="heading text-center mb-4">
+      <div className="heading text-center mb-0">
         <h2 className="title title-simple">{heading}</h2>
       </div>
       <Swiper
