@@ -1969,7 +1969,12 @@ body.mmenu-active .sticky-navbar.fixed {
 
 @media (max-width: 768px) {
   .shop-by-category__wrapper {
-    padding: 0;
+    padding: 0 2.5rem;
+    overflow: visible;
+  }
+
+  .shop-by-category__splide {
+    overflow: visible;
   }
 }
 
@@ -2047,6 +2052,18 @@ body.mmenu-active .sticky-navbar.fixed {
 
 .shop-by-category .splide__arrow--next {
   right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .shop-by-category .splide__arrow--prev {
+    left: 0;
+    transform: translate(-100%, -50%);
+  }
+
+  .shop-by-category .splide__arrow--next {
+    right: 0;
+    transform: translate(100%, -50%);
+  }
 }
 
 /* Tab banner - full-width image after category tabs */
