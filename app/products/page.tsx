@@ -853,7 +853,7 @@ function ProductsPageContent() {
                     <ProductGrid
                       products={products}
                       viewMode={viewMode}
-                      columnClass="col-6 col-md-4 col-lg-3 col-xl-5col"
+                      columnClass="col-12 col-md-4 col-lg-3 col-xl-5col"
                     />
                     {/* Intersection observer target for infinite scroll */}
                     <div

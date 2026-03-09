@@ -2218,3 +2218,11 @@ ul.nav.product-filter-items .nav-item a.nav-link.active {
     font-size: 1.5rem;
   }
 }
+
+.swiper-horizontal>.swiper-pagination-bullets,
+.swiper-pagination-bullets.swiper-pagination-horizontal {
+  bottom: var(--swiper-pagination-bottom, 0px) !important;
+  top: var(--swiper-pagination-top, auto);
+  left: 0;
+  width: 100%;
+}

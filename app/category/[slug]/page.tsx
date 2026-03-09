@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
-import { ProductGrid } from "@/components/product/ProductGrid";
 import { QuickViewModal } from "@/components/product/QuickViewModal";
 import { ImageGallery } from "@/components/gallery/ImageGallery";
 import {
@@ -248,42 +247,45 @@ export default function CategoryPage() {
                   </Link>
                 </div>
               )}
-            </div>
-          </div>
 
-          {/* Products Display Section */}
-          <div className="container">
-            <div className="row main-content-wrapper mb-2 pb-2">
-              <div className="col-lg-12">
-                {selectedSubCategoryId && (
-                  <div className="mb-4 text-center">
-                    <button
-                      onClick={() => setSelectedSubCategoryId(null)}
-                      className="btn btn-sm btn-outline-secondary"
-                      style={{ marginBottom: "1rem" }}
-                    >
-                      <i className="fas fa-times mr-2"></i>
-                      Clear Filter - Show All Categories
-                    </button>
-                  </div>
-                )}
-                
-                <div className="row products-body">
-                  {productsLoading ? (
-                    <div className="col-12 text-center py-5">
-                      <p>Loading products...</p>
+              {/* Products Display Section - inside tabs-and-content-section */}
+              <div className="row main-content-wrapper mb-2 pb-2 mt-5">
+                <div className="col-lg-12">
+                  {selectedSubCategoryId && (
+                    <div className="mb-4 text-center">
+                      <button
+                        onClick={() => setSelectedSubCategoryId(null)}
+                        className="btn btn-sm btn-outline-secondary"
+                        style={{ marginBottom: "1rem" }}
+                      >
+                        <i className="fas fa-times mr-2"></i>
+                        Clear Filter - Show All Categories
+                      </button>
                     </div>
-                  ) : products.length === 0 ? (
-                    <div className="col-12 text-center py-5">
-                      <p>No products found.</p>
-                    </div>
-                  ) : (
-                    <ProductGrid
-                      products={products}
-                      viewMode="grid"
-                      columnClass="col-6 col-md-4 col-lg-3 col-xl-5col"
-                    />
                   )}
+
+                  <div className="row products-body">
+                    {productsLoading ? (
+                      <div className="col-12 text-center py-5">
+                        <p>Loading products...</p>
+                      </div>
+                    ) : products.length === 0 ? (
+                      <div className="col-12 text-center py-5">
+                        <p>No products found.</p>
+                      </div>
+                    ) : (
+                      <>
+                        <ProductCarousel products={products} />
+                        <Link
+                          href={`/products?category=${selectedSubCategoryId || parentCategory?.id}`}
+                          className="btn with-icon align-center font2"
+                        >
+                          Browse All
+                          <i className="fas fa-long-arrow-alt-right"></i>
+                        </Link>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
