@@ -136,6 +136,7 @@ body {
 }
 
 @media (max-width: 767px) {
+
   .promotion-carousel__swiper .swiper-button-prev,
   .promotion-carousel__swiper .swiper-button-next {
     width: 22px;
@@ -1858,7 +1859,6 @@ ul.nav.product-filter-items .nav-item a.nav-link.active {
 .tab-banner {
   display: block;
   width: 100%;
-  height: 280px;
   border-radius: 0.5rem;
   overflow: hidden;
   position: relative;
@@ -1867,9 +1867,23 @@ ul.nav.product-filter-items .nav-item a.nav-link.active {
 .tab-banner__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
+}
+
+@media (max-width: 991px) {
+  .tab-banner {
+    height: auto;
+  }
+
+  .tab-banner__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+  }
 }
 
 /* Hero carousel - full-width banner slider */
