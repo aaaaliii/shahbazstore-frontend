@@ -171,16 +171,14 @@ body {
 .products-slider-wrapper .swiper-button-prev,
 .products-slider-wrapper .swiper-button-next {
   color: #700e77;
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 22px;
+  height: 22px;
+
 }
 
 .products-slider-wrapper .swiper-button-prev::after,
 .products-slider-wrapper .swiper-button-next::after {
-  font-size: 14px;
+  font-size: 11px;
   font-weight: bold;
 }
 
@@ -205,13 +203,13 @@ body {
 
   .products-slider-wrapper .swiper-button-prev,
   .products-slider-wrapper .swiper-button-next {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
   }
 
   .products-slider-wrapper .swiper-button-prev::after,
   .products-slider-wrapper .swiper-button-next::after {
-    font-size: 11px;
+    font-size: 9px;
   }
 }
 
