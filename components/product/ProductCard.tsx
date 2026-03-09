@@ -81,6 +81,31 @@ export function ProductCard({
             className="product-card__image"
           />
         </Link>
+        {/* Mobile: wishlist + quickview overlay on image (top left/right) */}
+        <div className="product-card__overlay-actions">
+          <a
+            href="#"
+            title={
+              isInWishlist(product.id)
+                ? "Remove from Wishlist"
+                : "Add to Wishlist"
+            }
+            className={`btn-icon-wish ${isInWishlist(product.id) ? "added-wishlist" : ""}`}
+            onClick={handleToggleWishlist}
+          >
+            <i className="icon-heart"></i>
+          </a>
+          {showQuickView && (
+            <a
+              href="#"
+              className="btn-quickview"
+              title="Quick View"
+              onClick={handleQuickView}
+            >
+              <i className="fas fa-external-link-alt"></i>
+            </a>
+          )}
+        </div>
       </figure>
       <div
         className={`product-details product-card__details align-items-center ${viewMode === "list" ? "col-md-8" : ""}`}
@@ -155,14 +180,14 @@ export function ProductCard({
                 ? "Remove from Wishlist"
                 : "Add to Wishlist"
             }
-            className={`btn-icon-wish ${isInWishlist(product.id) ? "added-wishlist" : ""}`}
+            className={`btn-icon-wish btn-icon-wish--desktop ${isInWishlist(product.id) ? "added-wishlist" : ""}`}
             onClick={handleToggleWishlist}
           >
             <i className="icon-heart"></i>
           </a>
           <a
             href="#"
-            className="btn-icon btn-add-cart product-type-simple"
+            className="btn btn-primary btn-add-cart product-type-simple"
             onClick={handleAddToCart}
           >
             <i className="icon-shopping-cart"></i>
@@ -171,7 +196,7 @@ export function ProductCard({
           {showQuickView && (
             <a
               href="#"
-              className="btn-quickview"
+              className="btn-quickview btn-quickview--desktop"
               title="Quick View"
               onClick={handleQuickView}
             >

@@ -19,6 +19,7 @@ import { productsApi } from '@/lib/api/products';
 import { reviewsApi, Review } from '@/lib/api/reviews';
 import { getAuthToken } from '@/lib/api/config';
 import { ProductCollections } from '@/components/product/ProductCollections';
+import { ProductCarousel } from '@/components/product/ProductCarousel';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -53,6 +54,7 @@ export default function ProductDetailPage() {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [prevProduct, setPrevProduct] = useState<Product | null>(null);
   const [nextProduct, setNextProduct] = useState<Product | null>(null);
+  const [youMayLikeProducts, setYouMayLikeProducts] = useState<Product[]>([]);
   const [zoomActive, setZoomActive] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
 
@@ -130,6 +132,36 @@ export default function ProductDetailPage() {
       fetchProduct();
     }
   }, [productId]);
+
+  // Fetch "You may also like" products (related products, excluding current)
+  useEffect(() => {
+    if (!product?.id) return;
+    const fetchYouMayLike = async () => {
+      try {
+        const related = await productsApi.getRelatedProducts(product.id, 12);
+        const filtered = related.filter((p) => p.id !== product.id);
+        setYouMayLikeProducts(filtered.slice(0, 10));
+      } catch (err) {
+        // Fallback: fetch products from same category
+        try {
+          const categoryId = product.categoryInfo?.id;
+          const result = await productsApi.getProducts({
+            limit: 12,
+            category: categoryId,
+            sortBy: "createdAt",
+            sortOrder: "desc",
+          });
+          const filtered = (result.products || []).filter(
+            (p) => p.id !== product.id,
+          );
+          setYouMayLikeProducts(filtered.slice(0, 10));
+        } catch (fallbackErr) {
+          console.error("Failed to fetch you may like products:", fallbackErr);
+        }
+      }
+    };
+    fetchYouMayLike();
+  }, [product?.id, product?.categoryInfo?.id]);
 
   const handleAddToCart = () => {
     if (product) {
@@ -1319,6 +1351,18 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* You may also like section */}
+      {youMayLikeProducts.length > 0 && (
+        <section className="you-may-like-section mt-0 pt-5 mb-5 overflow-hidden">
+          <div className="container">
+            <h2 className="title title-simple text-center mb-4">
+              You May Also Like
+            </h2>
+            <ProductCarousel products={youMayLikeProducts} />
+          </div>
+        </section>
+      )}
 
       {product?.categoryInfo?.id && (
         <ProductCollections categoryId={product.categoryInfo.id} />

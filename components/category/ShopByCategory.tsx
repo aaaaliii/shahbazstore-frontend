@@ -44,19 +44,20 @@ export function ShopByCategory({
   // Calculate perPage based on actual category count, but respect breakpoint limits
   const getPerPage = (count: number, breakpoint: number) => {
     const limits: Record<number, number> = {
+      0: 2, // mobile: 2 per page
       576: 3,
       768: 4,
       992: 5,
       1200: 6,
     };
-    const limit = limits[breakpoint] || 6;
+    const limit = limits[breakpoint] ?? 6;
     return Math.min(count, limit);
   };
 
   // Build breakpoints dynamically based on category count
   const buildBreakpoints = () => {
     const breakpoints: Record<number, { perPage: number }> = {};
-    const breakpointValues = [576, 768, 992, 1200];
+    const breakpointValues = [0, 576, 768, 992, 1200];
 
     breakpointValues.forEach((bp) => {
       const perPage = getPerPage(categories.length, bp);
@@ -70,19 +71,22 @@ export function ShopByCategory({
 
   const splideOptions = {
     type: categories.length > 1 ? "loop" : ("slide" as const),
-    perPage: Math.min(categories.length, 1),
+    perPage: Math.min(categories.length, 2),
     perMove: 1,
     gap: "0.25rem",
     arrows: categories.length > 1,
     pagination: false,
     mediaQuery: "min" as const,
     breakpoints: buildBreakpoints(),
+    autoplay: categories.length > 1,
+    interval: 4000,
+    pauseOnHover: true,
   };
 
   return (
     <section className="shop-by-category appear-animate mt-0 mb-5">
       <div className="heading text-center mb-4">
-        <h2 className="title title-simple">Shop by Category</h2>
+        <h2 className="title title-simple">Shop by Department</h2>
       </div>
 
       <div className="shop-by-category__wrapper position-relative">

@@ -18017,9 +18017,9 @@ hr.vertical {
 .product-default .btn-add-cart,
 .product-default .btn-icon-wish,
 .product-default .btn-quickview {
-    background-color: transparent;
-    border: 1px solid #dddddd;
-    color: #333333
+    background-color: rgba(251, 242, 232, 0.7) !important;
+    border: 1px solid #700e77 !important;
+    color: #700e77 !important;
 }
 
 .product-default .btn-add-cart {

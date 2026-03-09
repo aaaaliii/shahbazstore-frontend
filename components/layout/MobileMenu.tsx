@@ -1,9 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { HeaderLink } from "@/lib/api/headerLinks";
 import { useCart } from "@/lib/store/cart-store";
+import { categoriesApi } from "@/lib/api/categories";
+import { Category } from "@/types";
 
 const HEADER_GRADIENT =
   "linear-gradient(126deg, rgba(255, 168, 168, 1) 0%, rgba(112, 14, 119, 1) 36%, rgba(112, 14, 119, 1) 70%)";
@@ -20,6 +23,21 @@ export function MobileMenu({
   headerLinks = [],
 }: MobileMenuProps) {
   const { items: cartItems } = useCart();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const topLevel = await categoriesApi.getCategories(null);
+        setCategories(topLevel);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   if (!isOpen) return null;
 
@@ -73,6 +91,45 @@ export function MobileMenu({
                 </li>
               ))}
             </ul>
+            {/* Categories - accordion, closed by default, same style as mobile menu list */}
+            <div className="mobile-menu-categories -mt-4">
+              <div
+                className="mobile-menu-categories__header"
+                role="button"
+                tabIndex={0}
+                onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" &&
+                  setCategoriesExpanded(!categoriesExpanded)
+                }
+                aria-expanded={categoriesExpanded}
+              >
+                <span>CATEGORIES</span>
+                <i
+                  className={`fa fa-${categoriesExpanded ? "minus" : "plus"}`}
+                  aria-hidden
+                />
+              </div>
+              {categoriesExpanded && (
+                <ul className="mobile-menu mobile-menu-categories__list">
+                  <li>
+                    <Link href="/products" onClick={onClose}>
+                      All
+                    </Link>
+                  </li>
+                  {categories.map((cat) => (
+                    <li key={cat.id}>
+                      <Link
+                        href={`/products?category=${cat.id}`}
+                        onClick={onClose}
+                      >
+                        {cat.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </nav>
 
           <form className="search-wrapper mb-2" action="#">
