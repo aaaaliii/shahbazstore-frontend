@@ -37,8 +37,12 @@ function ProductsPageContent() {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000);
   const [topLevelCategories, setTopLevelCategories] = useState<Category[]>([]);
-  const [categoryChildren, setCategoryChildren] = useState<Record<string, Category[]>>({});
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [categoryChildren, setCategoryChildren] = useState<
+    Record<string, Category[]>
+  >({});
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  );
   const [randomCategoryId, setRandomCategoryId] = useState<string | null>(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(true);
   const [priceFilterExpanded, setPriceFilterExpanded] = useState(true);
@@ -79,10 +83,12 @@ function ProductsPageContent() {
         const categoriesArray = Array.isArray(cats) ? cats : [];
         console.log("Setting topLevelCategories:", categoriesArray);
         setTopLevelCategories(categoriesArray);
-        
+
         // Get random category for collections when no category is selected
         if (categoriesArray.length > 0) {
-          const randomIndex = Math.floor(Math.random() * categoriesArray.length);
+          const randomIndex = Math.floor(
+            Math.random() * categoriesArray.length,
+          );
           setRandomCategoryId(categoriesArray[randomIndex].id);
         }
       } catch (error) {
@@ -103,7 +109,7 @@ function ProductsPageContent() {
     categoryId: string,
     processingIds: Set<string> = new Set(),
     addedIds: Map<string, Category> = new Map(),
-    rootCategoryId: string
+    rootCategoryId: string,
   ): Promise<Category[]> => {
     try {
       // Prevent infinite loops
@@ -112,23 +118,30 @@ function ProductsPageContent() {
       }
       processingIds.add(categoryId);
 
-      const directSubCats = await categoriesApi.getCategories(categoryId).catch(() => []);
-      
+      const directSubCats = await categoriesApi
+        .getCategories(categoryId)
+        .catch(() => []);
+
       if (!Array.isArray(directSubCats)) {
         return [];
       }
-      
+
       // Process direct sub-categories
       for (const cat of directSubCats) {
         // Skip root category and already added categories
         if (cat.id !== rootCategoryId && !addedIds.has(cat.id)) {
           addedIds.set(cat.id, cat);
-          
+
           // Recursively fetch sub-categories of this category
-          await fetchAllSubCategories(cat.id, processingIds, addedIds, rootCategoryId);
+          await fetchAllSubCategories(
+            cat.id,
+            processingIds,
+            addedIds,
+            rootCategoryId,
+          );
         }
       }
-      
+
       // Return all unique categories as an array
       return Array.from(addedIds.values());
     } catch (error) {
@@ -144,7 +157,12 @@ function ProductsPageContent() {
       return;
     }
     try {
-      const allSubCats = await fetchAllSubCategories(categoryId, new Set(), new Map(), categoryId);
+      const allSubCats = await fetchAllSubCategories(
+        categoryId,
+        new Set(),
+        new Map(),
+        categoryId,
+      );
       // Use Map to ensure absolute uniqueness, then convert to array
       const uniqueMap = new Map<string, Category>();
       for (const cat of allSubCats) {
@@ -153,7 +171,7 @@ function ProductsPageContent() {
         }
       }
       const uniqueSubCats = Array.from(uniqueMap.values());
-      
+
       setCategoryChildren((prev) => ({
         ...prev,
         [categoryId]: uniqueSubCats,
@@ -176,7 +194,13 @@ function ProductsPageContent() {
   };
 
   // Category item component - all sub-categories shown at same level
-  const CategoryItem = ({ category, onSelect }: { category: Category; onSelect?: () => void }) => {
+  const CategoryItem = ({
+    category,
+    onSelect,
+  }: {
+    category: Category;
+    onSelect?: () => void;
+  }) => {
     const subCategories = categoryChildren[category.id] || [];
     const hasChildren = subCategories.length > 0;
     const isExpanded = expandedCategories.has(category.id);
@@ -234,10 +258,14 @@ function ProductsPageContent() {
           </a>
         </div>
         {isExpanded && hasChildren && (
-          <ul className="cat-list" style={{ marginLeft: "20px", marginTop: "5px" }}>
+          <ul
+            className="cat-list"
+            style={{ marginLeft: "20px", marginTop: "5px" }}
+          >
             {subCategories
-              .filter((subCat, index, self) => 
-                index === self.findIndex((c) => c.id === subCat.id)
+              .filter(
+                (subCat, index, self) =>
+                  index === self.findIndex((c) => c.id === subCat.id),
               )
               .map((subCat, index) => (
                 <li key={`${category.id}-${subCat.id}-${index}`}>
@@ -282,13 +310,25 @@ function ProductsPageContent() {
               e.preventDefault();
               setCategoriesExpanded(!categoriesExpanded);
             }}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none", color: "inherit" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              textDecoration: "none",
+              color: "inherit",
+            }}
           >
             <span>Categories</span>
-            <i className={`icon-${categoriesExpanded ? "minus" : "plus"}`} style={{ fontSize: "14px", color: "#000", fontWeight: "bold" }}></i>
+            <i
+              className={`fa fa-${categoriesExpanded ? "minus" : "plus"}`}
+              style={{ fontSize: "14px", color: "#fff", fontWeight: "bold" }}
+            ></i>
           </a>
         </h3>
-        <div className={`collapse ${categoriesExpanded ? "show" : ""}`} id={`widget-body-2${idSuffix}`}>
+        <div
+          className={`collapse ${categoriesExpanded ? "show" : ""}`}
+          id={`widget-body-2${idSuffix}`}
+        >
           <div className="widget-body">
             <ul className="cat-list">
               <li>
@@ -308,11 +348,17 @@ function ProductsPageContent() {
               </li>
               {topLevelCategories.length === 0 ? (
                 <li>
-                  <span style={{ color: "#999", fontStyle: "italic" }}>No categories available</span>
+                  <span style={{ color: "#999", fontStyle: "italic" }}>
+                    No categories available
+                  </span>
                 </li>
               ) : (
                 topLevelCategories.map((cat) => (
-                  <CategoryItem key={cat.id} category={cat} onSelect={onCloseMenu} />
+                  <CategoryItem
+                    key={cat.id}
+                    category={cat}
+                    onSelect={onCloseMenu}
+                  />
                 ))
               )}
             </ul>
@@ -320,7 +366,7 @@ function ProductsPageContent() {
         </div>
       </div>
 
-      <div className="widget widget-price">
+      <div className="widget widget-price mt-3">
         <h3 className="widget-title">
           <a
             href={`#widget-body-3${idSuffix}`}
@@ -331,13 +377,25 @@ function ProductsPageContent() {
               e.preventDefault();
               setPriceFilterExpanded(!priceFilterExpanded);
             }}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none", color: "inherit" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              textDecoration: "none",
+              color: "inherit",
+            }}
           >
             <span>Filter By Price</span>
-            <i className={`icon-${priceFilterExpanded ? "minus" : "plus"}`} style={{ fontSize: "14px", color: "#000", fontWeight: "bold" }}></i>
+            <i
+              className={`fa fa-${priceFilterExpanded ? "minus" : "plus"}`}
+              style={{ fontSize: "14px", color: "#fff", fontWeight: "bold" }}
+            ></i>
           </a>
         </h3>
-        <div className={`collapse ${priceFilterExpanded ? "show" : ""}`} id={`widget-body-3${idSuffix}`}>
+        <div
+          className={`collapse ${priceFilterExpanded ? "show" : ""}`}
+          id={`widget-body-3${idSuffix}`}
+        >
           <div className="widget-body">
             <form
               onSubmit={(e) => {
@@ -346,7 +404,10 @@ function ProductsPageContent() {
                 onCloseMenu?.();
               }}
             >
-              <div className="price-slider-wrapper" style={{ marginBottom: "15px" }}>
+              <div
+                className="price-slider-wrapper"
+                style={{ marginBottom: "15px" }}
+              >
                 <ReactSlider
                   className="price-range-slider"
                   thumbClassName="price-slider-thumb"
@@ -364,11 +425,14 @@ function ProductsPageContent() {
                   minDistance={10}
                 />
               </div>
-              <div className="filter-price-action d-flex align-items-center justify-content-between flex-wrap pb-0">
-                <div className="filter-price-text mb-1 mb-xl-0">
-                  Price: <span className="mr-3">${minPrice} - ${maxPrice}</span>
+              <div className="filter-price-action pb-0 mt-0">
+                <div className="filter-price-text mb-2">
+                  Price:{" "}
+                  <span className="mr-3">
+                    ${minPrice} - ${maxPrice}
+                  </span>
                 </div>
-                <div className="d-flex gap-2 mb-2">
+                <div className="d-flex gap-2 mb-3">
                   <input
                     type="number"
                     className="form-control form-control-sm"
@@ -386,14 +450,19 @@ function ProductsPageContent() {
                     placeholder="Max"
                     value={maxPrice}
                     onChange={(e) => {
-                      setMaxPrice(Math.min(10000, Number(e.target.value) || 1000));
+                      setMaxPrice(
+                        Math.min(10000, Number(e.target.value) || 1000),
+                      );
                       setPage(1);
                     }}
                     min={0}
                     max={10000}
                   />
                 </div>
-                <button type="submit" className="btn btn-primary font2 mb-1 mb-xl-0">
+                <button
+                  type="submit"
+                  className="btn btn-primary font2 mb-1 mb-xl-0"
+                >
                   Filter
                 </button>
               </div>
@@ -401,6 +470,17 @@ function ProductsPageContent() {
           </div>
         </div>
       </div>
+      {/* {onCloseMenu && (
+        <div className="products-filter-show-wrapper mt-4 pt-3">
+          <button
+            type="button"
+            className="btn btn-primary btn-block w-100 font2"
+            onClick={() => onCloseMenu()}
+          >
+            Show
+          </button>
+        </div>
+      )} */}
     </>
   );
 
@@ -448,15 +528,15 @@ function ProductsPageContent() {
         });
 
         const list = response?.products ?? [];
-        
+
         if (page === 1) {
           // First page - replace products
           setProducts(list);
         } else {
           // Subsequent pages - append products
-          setProducts(prev => [...prev, ...list]);
+          setProducts((prev) => [...prev, ...list]);
         }
-        
+
         setTotalPages(response.totalPages ?? 1);
         setHasMore(page < (response.totalPages ?? 1));
         setApiFailed(list.length === 0 && page === 1);
@@ -490,10 +570,10 @@ function ProductsPageContent() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
-          setPage(prev => prev + 1);
+          setPage((prev) => prev + 1);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const currentTarget = observerTarget.current;
@@ -510,7 +590,9 @@ function ProductsPageContent() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .sidebar-shop .widget-title a:before,
         .sidebar-shop .widget-title a:after {
           content: none !important;
@@ -526,41 +608,43 @@ function ProductsPageContent() {
             opacity: 1 !important;
           }
         }
-      `}} />
-    <main className="main">
-      <div className="category-banner-container bg-gray">
-        <div
-          className="category-banner banner text-uppercase"
-          style={{
-            background:
-              "no-repeat 60%/cover url('/assets/images/banners/banner-top.jpg')",
-          }}
-        >
-          <div className="container position-relative">
-            <div className="row">
-              <div className="pl-lg-5 pb-5 pb-md-0 col-md-5 col-xl-4 col-lg-4 offset-1">
-                <h3>
-                  All<br></br>Products
-                </h3>
-                <Link href="/products" className="btn btn-dark">
-                  Shop Now
-                </Link>
-              </div>
-              <div className="pl-lg-3 col-md-4 offset-md-0 offset-1 pt-3">
-                <div className="coupon-sale-content">
-                  <h4 className="m-b-1 coupon-sale-text bg-white text-transform-none">
-                    Browse Collection
-                  </h4>
-                  <h5 className="mb-2 coupon-sale-text d-block ls-10 p-0">
-                    <i className="ls-0">Discover</i>
-                    <b className="text-dark"> great deals</b>
-                  </h5>
+      `,
+        }}
+      />
+      <main className="main">
+        <div className="category-banner-container bg-gray">
+          <div
+            className="category-banner banner text-uppercase"
+            style={{
+              background:
+                "no-repeat 60%/cover url('/assets/images/banners/banner-top.jpg')",
+            }}
+          >
+            <div className="container position-relative">
+              <div className="row">
+                <div className="pl-lg-5 pb-5 pb-md-0 col-md-5 col-xl-4 col-lg-4 offset-1">
+                  <h3>
+                    All<br></br>Products
+                  </h3>
+                  <Link href="/products" className="btn btn-dark">
+                    Shop Now
+                  </Link>
+                </div>
+                <div className="pl-lg-3 col-md-4 offset-md-0 offset-1 pt-3">
+                  <div className="coupon-sale-content">
+                    <h4 className="m-b-1 coupon-sale-text bg-white text-transform-none">
+                      Browse Collection
+                    </h4>
+                    <h5 className="mb-2 coupon-sale-text d-block ls-10 p-0">
+                      <i className="ls-0">Discover</i>
+                      <b className="text-dark"> great deals</b>
+                    </h5>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
         <div className="container">
           <nav aria-label="breadcrumb" className="breadcrumb-nav">
@@ -614,13 +698,13 @@ function ProductsPageContent() {
             </div>
           )}
 
-        <div className="row main-content-wrapper mb-2 pb-2">
-          {/* Desktop sidebar: visible only on lg+ */}
-          <aside className="sidebar-shop col-lg-2 order-lg-first d-none d-lg-block">
-            <div className="sidebar-wrapper">
-              {renderFilterContent("", undefined)}
-            </div>
-          </aside>
+          <div className="row main-content-wrapper mb-2 pb-2">
+            {/* Desktop sidebar: visible only on lg+ */}
+            <aside className="sidebar-shop col-lg-2 order-lg-first d-none d-lg-block">
+              <div className="sidebar-wrapper">
+                {renderFilterContent("", undefined)}
+              </div>
+            </aside>
 
             <div className="col-lg-10">
               <nav
@@ -727,135 +811,143 @@ function ProductsPageContent() {
                   </div>
                 </div>
 
-              <div className="toolbox-right">
-                <div className="toolbox-item layout-modes">
-                  <a
-                    href="#"
-                    className={`layout-btn btn-grid ${viewMode === "grid" ? "active" : ""}`}
-                    title="Grid"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setViewMode("grid");
-                    }}
-                  >
-                    <i className="icon-mode-grid"></i>
-                  </a>
-                  <a
-                    href="#"
-                    className={`layout-btn btn-list ${viewMode === "list" ? "active" : ""}`}
-                    title="List"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setViewMode("list");
-                    }}
-                  >
-                    <i className="icon-mode-list"></i>
-                  </a>
-                </div>
-              </div>
-            </nav>
-
-            <div className="row products-body">
-              {loading && products.length === 0 ? (
-                <div className="col-12 text-center py-5">
-                  <p>Loading products...</p>
-                </div>
-              ) : products.length === 0 ? (
-                <div className="col-12 text-center py-5">
-                  <p>No products found.</p>
-                </div>
-              ) : (
-                <>
-                  <ProductGrid
-                    products={products}
-                    viewMode={viewMode}
-                    columnClass="col-6 col-md-4 col-lg-3 col-xl-5col"
-                  />
-                  {/* Intersection observer target for infinite scroll */}
-                  <div ref={observerTarget} style={{ height: '20px', width: '100%' }} />
-                  {loadingMore && (
-                    <div className="col-12 text-center py-3">
-                      <p>Loading more products...</p>
-                    </div>
-                  )}
-                  {!hasMore && products.length > 0 && (
-                    <div className="col-12 text-center py-3">
-                      <p className="text-muted">No more products to load.</p>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Pagination hidden - using infinite scroll instead */}
-            <nav className="toolbox toolbox-pagination font2" style={{ display: 'none' }}>
-              <ul className="pagination toolbox-item">
-                <li className={`page-item ${page <= 1 ? "disabled" : ""}`}>
-                  <a
-                    className="page-link page-link-btn"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (page > 1) setPage(page - 1);
-                    }}
-                  >
-                    <i className="icon-angle-left"></i>
-                  </a>
-                </li>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const pageNum =
-                    Math.max(1, Math.min(totalPages - 4, page - 2)) + i;
-                  if (pageNum > totalPages) return null;
-                  return (
-                    <li
-                      key={pageNum}
-                      className={`page-item ${pageNum === page ? "active" : ""}`}
+                <div className="toolbox-right">
+                  <div className="toolbox-item layout-modes">
+                    <a
+                      href="#"
+                      className={`layout-btn btn-grid ${viewMode === "grid" ? "active" : ""}`}
+                      title="Grid"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setViewMode("grid");
+                      }}
                     >
-                      <a
-                        className="page-link"
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setPage(pageNum);
-                        }}
+                      <i className="icon-mode-grid"></i>
+                    </a>
+                    <a
+                      href="#"
+                      className={`layout-btn btn-list ${viewMode === "list" ? "active" : ""}`}
+                      title="List"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setViewMode("list");
+                      }}
+                    >
+                      <i className="icon-mode-list"></i>
+                    </a>
+                  </div>
+                </div>
+              </nav>
+
+              <div className="row products-body">
+                {loading && products.length === 0 ? (
+                  <div className="col-12 text-center py-5">
+                    <p>Loading products...</p>
+                  </div>
+                ) : products.length === 0 ? (
+                  <div className="col-12 text-center py-5">
+                    <p>No products found.</p>
+                  </div>
+                ) : (
+                  <>
+                    <ProductGrid
+                      products={products}
+                      viewMode={viewMode}
+                      columnClass="col-6 col-md-4 col-lg-3 col-xl-5col"
+                    />
+                    {/* Intersection observer target for infinite scroll */}
+                    <div
+                      ref={observerTarget}
+                      style={{ height: "20px", width: "100%" }}
+                    />
+                    {loadingMore && (
+                      <div className="col-12 text-center py-3">
+                        <p>Loading more products...</p>
+                      </div>
+                    )}
+                    {!hasMore && products.length > 0 && (
+                      <div className="col-12 text-center py-3">
+                        <p className="text-muted">No more products to load.</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Pagination hidden - using infinite scroll instead */}
+              <nav
+                className="toolbox toolbox-pagination font2"
+                style={{ display: "none" }}
+              >
+                <ul className="pagination toolbox-item">
+                  <li className={`page-item ${page <= 1 ? "disabled" : ""}`}>
+                    <a
+                      className="page-link page-link-btn"
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (page > 1) setPage(page - 1);
+                      }}
+                    >
+                      <i className="icon-angle-left"></i>
+                    </a>
+                  </li>
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const pageNum =
+                      Math.max(1, Math.min(totalPages - 4, page - 2)) + i;
+                    if (pageNum > totalPages) return null;
+                    return (
+                      <li
+                        key={pageNum}
+                        className={`page-item ${pageNum === page ? "active" : ""}`}
                       >
-                        {pageNum}{" "}
-                        {pageNum === page && (
-                          <span className="sr-only">(current)</span>
-                        )}
-                      </a>
-                    </li>
-                  );
-                })}
-                <li
-                  className={`page-item ${page >= totalPages ? "disabled" : ""}`}
-                >
-                  <a
-                    className="page-link page-link-btn"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (page < totalPages) setPage(page + 1);
-                    }}
+                        <a
+                          className="page-link"
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPage(pageNum);
+                          }}
+                        >
+                          {pageNum}{" "}
+                          {pageNum === page && (
+                            <span className="sr-only">(current)</span>
+                          )}
+                        </a>
+                      </li>
+                    );
+                  })}
+                  <li
+                    className={`page-item ${page >= totalPages ? "disabled" : ""}`}
                   >
-                    <i className="icon-angle-right"></i>
-                  </a>
-                </li>
-              </ul>
-            </nav>
+                    <a
+                      className="page-link page-link-btn"
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (page < totalPages) setPage(page + 1);
+                      }}
+                    >
+                      <i className="icon-angle-right"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
+
+          <ProductsFilterMenu
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          >
+            {renderFilterContent("-mobile", () => setSidebarOpen(false))}
+          </ProductsFilterMenu>
         </div>
 
-        <ProductsFilterMenu
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        >
-          {renderFilterContent("-mobile", () => setSidebarOpen(false))}
-        </ProductsFilterMenu>
-      </div>
-
-      <ProductCollections categoryId={selectedCategory || randomCategoryId || undefined} />
-    </main>
+        <ProductCollections
+          categoryId={selectedCategory || randomCategoryId || undefined}
+        />
+      </main>
     </>
   );
 }

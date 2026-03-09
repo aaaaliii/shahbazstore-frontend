@@ -1621,12 +1621,18 @@ body.mmenu-active .sticky-navbar.fixed {
 /* Force filter panel content visible on mobile (theme hides .collapse / .widget-body below 992px) */
 .products-filter-content .widget,
 .products-filter-content .widget-body,
-.products-filter-content .collapse,
-.products-filter-content .collapse.show,
 .products-filter-content .price-slider-wrapper {
-  display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+}
+
+/* Accordion: collapse hidden by default, show when .show class present */
+.products-filter-content .collapse {
+  display: none !important;
+}
+
+.products-filter-content .collapse.show {
+  display: block !important;
 }
 
 .products-filter-content .price-slider-wrapper {
@@ -1712,6 +1718,13 @@ body.mmenu-active .sticky-navbar.fixed {
   background: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.5);
   color: #fff;
+  display: inline-block !important;
+  visibility: visible !important;
+}
+
+.products-filter-content .filter-price-action .btn-primary {
+  width: 100%;
+  padding: 0.6rem 1.2rem;
 }
 
 .products-filter-content .btn-primary:hover {

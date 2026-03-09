@@ -175,8 +175,6 @@ export default function HomePage() {
           <HeroCarousel />
         </section>
 
-        <PromotionCarousel heading="Special Promotions" />
-
         <section className="info-box-container mb-0 appear-animate">
           <div className="row">
             <div className="col-sm-6 col-xl-3 mb-2 mb-xl-0">
@@ -357,6 +355,7 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+      <PromotionCarousel heading="Special Promotions" />
 
       <ProductCollections categoryId={categoryIdsByTab[activeTab]} />
 
