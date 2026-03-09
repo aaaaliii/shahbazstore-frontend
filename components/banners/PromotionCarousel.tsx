@@ -35,8 +35,8 @@ const DEFAULT_PROMOTIONS: PromotionItem[] = CAROUSEL_IMAGES.map((image, i) => ({
   image,
   alt: `Shahbaz Store - Promotion ${i + 1}`,
   link: "/products",
-  imageWidth: 600,
-  imageHeight: 400,
+  imageWidth: 500,
+  imageHeight: 300,
 }));
 
 interface PromotionCarouselProps {
@@ -58,7 +58,11 @@ export function PromotionCarousel({
         spaceBetween={16}
         slidesPerView={1}
         breakpoints={{
-          992: {
+          500: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
             slidesPerView: 3,
             spaceBetween: 20,
           },

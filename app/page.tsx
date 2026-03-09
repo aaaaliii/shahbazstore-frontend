@@ -354,8 +354,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        <PromotionCarousel heading="Special Promotions" />
       </div>
-      <PromotionCarousel heading="Special Promotions" />
 
       <ProductCollections categoryId={categoryIdsByTab[activeTab]} />
 
