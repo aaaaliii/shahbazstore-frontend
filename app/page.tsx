@@ -44,7 +44,9 @@ export default function HomePage() {
     null,
   );
   const [settings, setSettings] = useState<Settings | null>(null);
-  const [homepageCategories, setHomepageCategories] = useState<any[]>([]);
+  const [heroBanners, setHeroBanners] = useState<any[]>([]);
+  const [promotionBanners, setPromotionBanners] = useState<any[]>([]);
+  const [categoryBanner, setCategoryBanner] = useState<any>(null);
 
   const handleToggleWishlist = async (
     e: React.MouseEvent,
@@ -67,28 +69,47 @@ export default function HomePage() {
     fetchWishlist();
   }, [fetchWishlist]);
 
-  // Fetch settings to check banner status and homepage categories
+  // Fetch settings to check banner status and hero banners
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         const siteSettings = await settingsApi.get();
         setSettings(siteSettings);
         if (
-          siteSettings.homepageCategories &&
-          siteSettings.homepageCategories.length > 0
+          siteSettings.heroBanners &&
+          siteSettings.heroBanners.length > 0
         ) {
-          // Sort by position and filter active ones
-          const sorted = siteSettings.homepageCategories
-            .filter((cat) => cat.isActive !== false)
-            .sort((a, b) => a.position - b.position);
-          setHomepageCategories(sorted);
+          // Sort by order and filter active ones
+          const sorted = siteSettings.heroBanners
+            .filter((banner) => banner.isActive !== false)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+          setHeroBanners(sorted);
         } else {
-          setHomepageCategories([]);
+          setHeroBanners([]);
+        }
+        if (
+          siteSettings.promotionBanners &&
+          siteSettings.promotionBanners.length > 0
+        ) {
+          // Sort by order and filter active ones
+          const sorted = siteSettings.promotionBanners
+            .filter((banner) => banner.isActive !== false)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+          setPromotionBanners(sorted);
+        } else {
+          setPromotionBanners([]);
+        }
+        if (siteSettings.categoryBanner && siteSettings.categoryBanner.isActive) {
+          setCategoryBanner(siteSettings.categoryBanner);
+        } else {
+          setCategoryBanner(null);
         }
       } catch (error) {
         console.error("Error fetching settings:", error);
         setSettings(null);
-        setHomepageCategories([]);
+        setHeroBanners([]);
+        setPromotionBanners([]);
+        setCategoryBanner(null);
       }
     };
 
@@ -172,8 +193,27 @@ export default function HomePage() {
     <main className={`home main ${!settings?.banner?.isActive ? "mt-10" : ""}`}>
       <div className="container">
         <section className="hero-section">
-          <HeroCarousel />
+          <HeroCarousel 
+            slides={heroBanners.length > 0 ? heroBanners.map(banner => ({
+              image: banner.image,
+              title: banner.title,
+              subtitle: banner.subtitle,
+              link: banner.link,
+              linkText: banner.linkText
+            })) : undefined}
+          />
         </section>
+
+        <PromotionCarousel 
+          heading="Special Promotions"
+          promotions={promotionBanners.length > 0 ? promotionBanners.map(banner => ({
+            image: banner.image,
+            alt: banner.alt || 'Promotion Banner',
+            link: banner.categoryId ? `/products?category=${banner.categoryId}` : '/products',
+            imageWidth: 600,
+            imageHeight: 400
+          })) : undefined}
+        />
 
         <section className="info-box-container mb-0 appear-animate">
           <div className="row">
@@ -227,14 +267,10 @@ export default function HomePage() {
             categories={categories.map((category): CategoryWithImage => {
               const tabKey = category.slug || category.id;
               const products = featuredProducts[tabKey] || [];
-              const homepageCat = homepageCategories.find(
-                (hc) => hc.categoryId === category.id,
-              );
               return {
                 ...category,
                 image:
                   category.image ||
-                  homepageCat?.image ||
                   products[0]?.image ||
                   "/assets/images/products/product-1.jpg",
               };
@@ -253,17 +289,31 @@ export default function HomePage() {
             }}
           >
             <div className="container">
-              <div className="tab-banner-wrapper">
-                <Link href="/products" className="tab-banner">
-                  <Image
-                    src="/assets/images/banners/ramzan banner.jpg"
-                    alt="Ramzan Kareem - Customize Your Ramadan Blessings"
-                    width={1200}
-                    height={320}
-                    className="tab-banner__img"
-                  />
-                </Link>
-              </div>
+              {categoryBanner && categoryBanner.image ? (
+                <div className="tab-banner-wrapper">
+                  <Link href={categoryBanner.link || '/products'} className="tab-banner">
+                    <Image
+                      src={categoryBanner.image}
+                      alt={categoryBanner.alt || 'Category Banner'}
+                      width={1200}
+                      height={320}
+                      className="tab-banner__img"
+                    />
+                  </Link>
+                </div>
+              ) : (
+                <div className="tab-banner-wrapper">
+                  <Link href="/products" className="tab-banner">
+                    <Image
+                      src="/assets/images/banners/ramzan banner.jpg"
+                      alt="Ramzan Kareem - Customize Your Ramadan Blessings"
+                      width={1200}
+                      height={320}
+                      className="tab-banner__img"
+                    />
+                  </Link>
+                </div>
+              )}
               <div
                 className="heading d-flex align-items-center justify-content-center mt-5 mb-5"
                 style={{ overflowX: "auto", width: "100%" }}

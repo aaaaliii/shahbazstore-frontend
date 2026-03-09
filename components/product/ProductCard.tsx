@@ -69,16 +69,16 @@ export function ProductCard({
           />
         </Link>
       </figure>
-      <div className={`product-details product-card__details ${viewMode === 'list' ? 'col-md-8' : ''}`}>
-        <div className="category-list">
+      <div className={`product-details product-card__details ${viewMode === 'list' ? 'col-md-8' : ''}`} style={viewMode === 'grid' ? { textAlign: 'center' } : {}}>
+        <div className="category-list" style={viewMode === 'grid' ? { textAlign: 'center' } : {}}>
           <Link href={product.categoryInfo?.id ? `/products?category=${product.categoryInfo.id}` : '/products'} className="product-category">
             {categoryName}
           </Link>
         </div>
-        <h3 className="product-title">
+        <h3 className="product-title" style={viewMode === 'grid' ? { textAlign: 'center' } : {}}>
           <Link href={`/product/${product.slug}`}>{product.name}</Link>
         </h3>
-        <div className="ratings-container">
+        <div className="ratings-container" style={viewMode === 'grid' ? { display: 'flex', justifyContent: 'center' } : {}}>
           <div className="product-ratings">
             <span
               className="ratings"
@@ -87,13 +87,13 @@ export function ProductCard({
             <span className="tooltiptext tooltip-top"></span>
           </div>
         </div>
-        <div className="price-box">
+        <div className="price-box" style={viewMode === 'grid' ? { textAlign: 'center' } : {}}>
           {product.oldPrice && product.oldPrice > product.price && (
             <del className="old-price">{formatPrice(product.oldPrice)}</del>
           )}
           <span className="product-price">{formatPrice(product.price)}</span>
         </div>
-        <div className="product-action product-card__actions">
+        <div className="product-action product-card__actions" style={viewMode === 'grid' ? { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' } : {}}>
           <a
             href="#"
             title={isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}

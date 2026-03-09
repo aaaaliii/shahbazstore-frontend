@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
+import { ProductGrid } from "@/components/product/ProductGrid";
 import { QuickViewModal } from "@/components/product/QuickViewModal";
 import { ImageGallery } from "@/components/gallery/ImageGallery";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/components/category/ShopByCategory";
 import { Product } from "@/types";
 import { categoriesApi } from "@/lib/api/categories";
+import { productsApi } from "@/lib/api/products";
 import { Category } from "@/types";
 import { useWishlist } from "@/lib/store/wishlist-store";
 import { useSiteLoading } from "@/lib/loading-context";
@@ -25,11 +27,13 @@ export default function CategoryPage() {
 
   const [parentCategory, setParentCategory] = useState<Category | null>(null);
   const [subCategories, setSubCategories] = useState<CategoryWithImage[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [categoryIdsByTab, setCategoryIdsByTab] = useState<
     Record<string, string>
   >({});
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
     null,
   );
@@ -65,14 +69,11 @@ export default function CategoryPage() {
         setSubCategories(withImages);
 
         if (withImages.length > 0) {
-          const firstSlug = withImages[0].slug || withImages[0].id;
-          setActiveTab(firstSlug);
           setCategoryIdsByTab(
             Object.fromEntries(withImages.map((c) => [c.slug || c.id, c.id])),
           );
         } else {
           const parentKey = parent.slug || parent.id;
-          setActiveTab(parentKey);
           setCategoryIdsByTab({ [parentKey]: parent.id });
         }
       } catch (error) {
@@ -88,73 +89,62 @@ export default function CategoryPage() {
     fetchData();
   }, [slug]);
 
-  // Static product listing for now (no API fetch)
-  const STATIC_PRODUCTS: Product[] = [
-    {
-      id: "1",
-      name: "Product 1",
-      slug: "product-1",
-      price: 999,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-    {
-      id: "2",
-      name: "Product 2",
-      slug: "product-2",
-      price: 1299,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-    {
-      id: "3",
-      name: "Product 3",
-      slug: "product-3",
-      price: 799,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-    {
-      id: "4",
-      name: "Product 4",
-      slug: "product-4",
-      price: 1599,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-    {
-      id: "5",
-      name: "Product 5",
-      slug: "product-5",
-      price: 599,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-    {
-      id: "6",
-      name: "Product 6",
-      slug: "product-6",
-      price: 899,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-    {
-      id: "7",
-      name: "Product 7",
-      slug: "product-7",
-      price: 1199,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-    {
-      id: "8",
-      name: "Product 8",
-      slug: "product-8",
-      price: 499,
-      image: "/assets/images/products/product-1.jpg",
-      category: "",
-    },
-  ];
+  // Fetch products based on selected category
+  useEffect(() => {
+    if (!parentCategory) return;
+
+    const fetchProducts = async () => {
+      try {
+        setProductsLoading(true);
+        let allProducts: Product[] = [];
+
+        if (selectedSubCategoryId) {
+          // Fetch products for selected sub-category only
+          const response = await productsApi.getProducts({
+            category: selectedSubCategoryId,
+            limit: 100,
+          });
+          allProducts = response.products || [];
+        } else {
+          // Fetch products for parent category and all sub-categories
+          const categoryIds = [parentCategory.id];
+          if (subCategories.length > 0) {
+            categoryIds.push(...subCategories.map((cat) => cat.id));
+          }
+
+          // Fetch products for each category and combine
+          const productPromises = categoryIds.map((catId) =>
+            productsApi.getProducts({ category: catId, limit: 100 })
+          );
+          const responses = await Promise.all(productPromises);
+          const allProductsArrays = responses.map((r) => r.products || []);
+          
+          // Combine and remove duplicates based on product ID
+          const productMap = new Map<string, Product>();
+          allProductsArrays.flat().forEach((product) => {
+            if (!productMap.has(product.id)) {
+              productMap.set(product.id, product);
+            }
+          });
+          allProducts = Array.from(productMap.values());
+        }
+
+        setProducts(allProducts);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        setProducts([]);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [parentCategory, subCategories, selectedSubCategoryId]);
+
+  // Handle sub-category click
+  const handleSubCategoryClick = (categoryId: string, category: CategoryWithImage) => {
+    setSelectedSubCategoryId(categoryId);
+  };
 
   if (loading) {
     return (
@@ -201,16 +191,6 @@ export default function CategoryPage() {
       : parentCategory
         ? { [parentCategory.slug || parentCategory.id]: parentCategory.id }
         : {};
-  const displayActiveTab =
-    subCategories.length > 0
-      ? activeTab
-      : parentCategory?.slug || parentCategory?.id || "";
-  const tabsToShow =
-    subCategories.length > 0
-      ? subCategories
-      : parentCategory
-        ? [parentCategory]
-        : [];
 
   const categoryName = parentCategory?.name || "Category";
 
@@ -220,7 +200,7 @@ export default function CategoryPage() {
         <section className="hero-section">
           <div className="category-banner">
             <Image
-              src="/assets/images/hero/hero (1).webp"
+              src={parentCategory?.banner || "/assets/images/hero/hero (1).webp"}
               alt={categoryName}
               fill
               sizes="100vw"
@@ -237,10 +217,13 @@ export default function CategoryPage() {
         </section>
 
         <section className="featured-section product-slider-tab appear-animate mt-5">
-          <ShopByCategory
-            categories={displayCategories}
-            categoryIdsByTab={displayCategoryIdsByTab}
-          />
+          {subCategories.length > 0 && (
+            <ShopByCategory
+              categories={displayCategories}
+              categoryIdsByTab={displayCategoryIdsByTab}
+              onCategoryClick={handleSubCategoryClick}
+            />
+          )}
 
           <div
             className="tabs-and-content-section"
@@ -252,89 +235,56 @@ export default function CategoryPage() {
             }}
           >
             <div className="container">
-              <div className="tab-banner-wrapper mb-4">
-                <Link href="/products" className="tab-banner">
-                  <Image
-                    src="/assets/images/banners/ramzan banner.jpg"
-                    alt="Ramzan Kareem - Customize Your Ramadan Blessings"
-                    width={1200}
-                    height={320}
-                    className="tab-banner__img"
-                  />
-                </Link>
-              </div>
+              {parentCategory?.promoBanner && (
+                <div className="tab-banner-wrapper mb-4">
+                  <Link href="/products" className="tab-banner">
+                    <Image
+                      src={parentCategory.promoBanner}
+                      alt={`${parentCategory.name} Promotional Banner`}
+                      width={1200}
+                      height={320}
+                      className="tab-banner__img"
+                    />
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
 
-              <div
-                className="heading d-flex align-items-center justify-content-center mt-5 mb-5"
-                style={{ overflowX: "auto", width: "100%" }}
-              >
-                <ul
-                  className="nav product-filter-items mb-0"
-                  style={{
-                    display: "flex",
-                    flexWrap: "nowrap",
-                    gap: "1.5rem",
-                    padding: "0 1rem",
-                    maxWidth: "100%",
-                  }}
-                >
-                  {tabsToShow.map((category) => {
-                    const tabKey = category.slug || category.id;
-                    return (
-                      <li
-                        key={category.id}
-                        className="nav-item product-filter-item"
-                        style={{ flexShrink: 0 }}
-                      >
-                        <a
-                          href="#"
-                          className={`nav-link ${
-                            displayActiveTab === tabKey ? "active" : ""
-                          }`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setActiveTab(tabKey);
-                          }}
-                          style={{
-                            cursor: "pointer",
-                            userSelect: "none",
-                            fontSize: "2rem",
-                            fontWeight: "600",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {category.name.toUpperCase()}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-
-              <div className="tab-content">
-                {tabsToShow.map((category) => {
-                  const tabKey = category.slug || category.id;
-                  const categoryId = displayCategoryIdsByTab[tabKey];
-                  return (
-                    <div
-                      key={category.id}
-                      className={`tab-pane fade ${
-                        displayActiveTab === tabKey ? "show active" : ""
-                      }`}
+          {/* Products Display Section */}
+          <div className="container">
+            <div className="row main-content-wrapper mb-2 pb-2">
+              <div className="col-lg-12">
+                {selectedSubCategoryId && (
+                  <div className="mb-4 text-center">
+                    <button
+                      onClick={() => setSelectedSubCategoryId(null)}
+                      className="btn btn-sm btn-outline-secondary"
+                      style={{ marginBottom: "1rem" }}
                     >
-                      <ProductCarousel products={STATIC_PRODUCTS} />
-                      {categoryId && (
-                        <Link
-                          href={`/products?category=${categoryId}`}
-                          className="btn with-icon align-center font2"
-                        >
-                          Browse All
-                          <i className="fas fa-long-arrow-alt-right"></i>
-                        </Link>
-                      )}
+                      <i className="fas fa-times mr-2"></i>
+                      Clear Filter - Show All Categories
+                    </button>
+                  </div>
+                )}
+                
+                <div className="row products-body">
+                  {productsLoading ? (
+                    <div className="col-12 text-center py-5">
+                      <p>Loading products...</p>
                     </div>
-                  );
-                })}
+                  ) : products.length === 0 ? (
+                    <div className="col-12 text-center py-5">
+                      <p>No products found.</p>
+                    </div>
+                  ) : (
+                    <ProductGrid
+                      products={products}
+                      viewMode="grid"
+                      columnClass="col-6 col-md-4 col-lg-3 col-xl-5col"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>

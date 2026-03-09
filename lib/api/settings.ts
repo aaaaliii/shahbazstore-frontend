@@ -30,20 +30,34 @@ export interface DeliveryChargesSettings {
   freeDeliveryThreshold: number;
 }
 
-export interface HomepageCategory {
-  categoryId: string;
+export interface HeroBanner {
   image: string;
-  position: number;
   title?: string;
   subtitle?: string;
   link?: string;
   linkText?: string;
+  order?: number;
+  isActive?: boolean;
+}
+
+export interface PromotionBanner {
+  image: string;
+  categoryId?: string;
+  alt?: string;
+  order?: number;
   isActive?: boolean;
   category?: {
     _id: string;
     name: string;
     slug: string;
   };
+}
+
+export interface CategoryBanner {
+  image: string;
+  alt?: string;
+  link?: string;
+  isActive?: boolean;
 }
 
 export interface Settings {
@@ -53,7 +67,9 @@ export interface Settings {
   social?: SocialSettings;
   seo?: SEOSettings;
   deliveryCharges?: DeliveryChargesSettings;
-  homepageCategories?: HomepageCategory[];
+  heroBanners?: HeroBanner[];
+  promotionBanners?: PromotionBanner[];
+  categoryBanner?: CategoryBanner;
 }
 
 export interface SettingsResponse {

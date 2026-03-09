@@ -37,6 +37,8 @@ export interface Category {
   parentId?: string;
   children?: Category[];
   image?: string;
+  banner?: string;
+  promoBanner?: string;
 }
 
 export interface CartItem {

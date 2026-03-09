@@ -13,6 +13,8 @@ export interface BackendCategory {
   description?: string;
   isActive?: boolean;
   image?: string;
+  banner?: string;
+  promoBanner?: string;
 }
 
 const transformCategory = (category: BackendCategory): Category => {
@@ -26,6 +28,8 @@ const transformCategory = (category: BackendCategory): Category => {
     slug: category.slug,
     parentId: parentId,
     image: category.image,
+    banner: category.banner,
+    promoBanner: category.promoBanner,
   };
 };
 
