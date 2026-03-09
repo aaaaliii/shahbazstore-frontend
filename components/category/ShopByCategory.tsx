@@ -57,19 +57,19 @@ export function ShopByCategory({
   const buildBreakpoints = () => {
     const breakpoints: Record<number, { perPage: number }> = {};
     const breakpointValues = [576, 768, 992, 1200];
-    
+
     breakpointValues.forEach((bp) => {
       const perPage = getPerPage(categories.length, bp);
       if (perPage > 0) {
         breakpoints[bp] = { perPage };
       }
     });
-    
+
     return breakpoints;
   };
 
   const splideOptions = {
-    type: categories.length > 1 ? "loop" : "slide" as const,
+    type: categories.length > 1 ? "loop" : ("slide" as const),
     perPage: Math.min(categories.length, 1),
     perMove: 1,
     gap: "0.25rem",
@@ -80,7 +80,7 @@ export function ShopByCategory({
   };
 
   return (
-    <section className="shop-by-category appear-animate mt-5 mb-5">
+    <section className="shop-by-category appear-animate mt-0 mb-5">
       <div className="heading text-center mb-4">
         <h2 className="title title-simple">Shop by Category</h2>
       </div>
@@ -105,12 +105,12 @@ export function ShopByCategory({
                       onCategoryClick(categoryId, category);
                     }}
                     className="shop-by-category__item"
-                    style={{ 
-                      background: 'none', 
-                      border: 'none', 
-                      padding: 0, 
-                      cursor: 'pointer',
-                      textAlign: 'center'
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      textAlign: "center",
                     }}
                   >
                     <div className="shop-by-category__circle">

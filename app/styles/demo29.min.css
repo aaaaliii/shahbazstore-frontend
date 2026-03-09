@@ -18155,7 +18155,7 @@ hr.vertical {
 }
 
 .home section {
-    margin-bottom: 1.5rem
+    margin-bottom: 2.5rem
 }
 
 .home .featured-section {
@@ -18603,7 +18603,13 @@ a.with-icon.align-center {
 }
 
 .info-box-container {
-    padding: 5px 0 2.9rem
+    padding: 5px 0 2.9rem;
+}
+
+@media screen and (max-width: 768px) {
+    .info-box-container {
+        padding: 5px 0;
+    }
 }
 
 .info-box-container .info-box {
